@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/voxtelesys/n8n-nodes-voxtelesys/issues"
   },
-  "homepage": "https://github.com/voxtelesys/n8n-nodes-voxtelesys#readme"
+  "homepage": "https://github.com/voxtelesys/n8n-nodes-voxtelesys#readme",
+  "dependencies": {
+    "n8n-workflow": "^2.16.0"
+  }
 }
