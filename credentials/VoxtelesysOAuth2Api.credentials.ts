@@ -1,8 +1,9 @@
 import type { ICredentialType, INodeProperties } from 'n8n-workflow';
 
 /**
-	OAuth 2.0 client credentials grant against the Voxtelesys Auth API.
- 	n8n by default handles token caching and refresh.
+ * n8n handles token caching and refresh. Access tokens default to a one hour
+ * lifetime, so this is the recommended credential for production workflows.
+ *
  */
 export class VoxtelesysOAuth2Api implements ICredentialType {
 	name = 'voxtelesysOAuth2Api';
@@ -68,6 +69,8 @@ export class VoxtelesysOAuth2Api implements ICredentialType {
 				{ name: 'Salt Lake City', value: 'slc' },
 			],
 			default: '',
+			description:
+				'Pin API requests to a specific region. Leave on Automatic to use the non-region-specific endpoint.',
 		},
 	];
 }
