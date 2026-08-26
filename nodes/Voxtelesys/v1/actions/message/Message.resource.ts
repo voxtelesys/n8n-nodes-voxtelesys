@@ -378,23 +378,6 @@ export const messageFields: INodeProperties[] = [
 					'Return only messages at or after this time, sent as ISO 8601. Defaults to yesterday when omitted, so set this to reach further back.',
 			},
 			{
-				displayName: 'Status',
-				name: 'status',
-				type: 'options',
-				options: [
-					{ name: 'Delivered', value: 'delivered' },
-					{ name: 'Delivering', value: 'delivering' },
-					{ name: 'Expired', value: 'expired' },
-					{ name: 'Failed', value: 'failed' },
-					{ name: 'Queued', value: 'queued' },
-					{ name: 'Received', value: 'received' },
-					{ name: 'Unknown', value: 'unknown' },
-				],
-				default: 'delivered',
-				description:
-					'Return only messages in this status. The API has no status filter, so this is applied in the node after fetching. With Return All off, the limit is applied first, so fewer than the limit may come back.',
-			},
-			{
 				displayName: 'Tag',
 				name: 'tag',
 				type: 'string',
