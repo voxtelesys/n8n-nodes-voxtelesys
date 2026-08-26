@@ -62,6 +62,15 @@ export async function send(
 		)
 	}
 
+	if (options.tag) body.tag = options.tag as string
+	if (options.bulkTag) body.bulk_tag = options.bulkTag as string
+	if (options.statusCallbackUrl) {
+		body.status_callback = {
+			url: options.statusCallbackUrl as string,
+			method: (options.statusCallbackMethod as string) || 'POST',
+		}
+	}
+
 	const response = await voxtelesysApiRequest.call(this, 'sms', 'POST', '/sms', body)
 
 	return [
