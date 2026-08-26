@@ -2,7 +2,7 @@ import type { IDataObject, IExecuteFunctions, INodeExecutionData } from 'n8n-wor
 import { NodeOperationError } from 'n8n-workflow'
 
 import { voxtelesysApiRequest } from '../../transport'
-import { isValidE164 } from '../../helpers/statuses'
+import { isValidE164, toE164 } from '../../helpers/statuses'
 
 /**
  * POST /sms
@@ -24,12 +24,15 @@ export async function send(
 	itemIndex: number,
 ): Promise<INodeExecutionData[]> {
 	const options = this.getNodeParameter('options', itemIndex, {}) as IDataObject
+	const normalize = options.normalize !== false
 
-	const from = this.getNodeParameter('from', itemIndex) as string
-	const to = this.getNodeParameter('to', itemIndex) as string
+	const rawFrom = this.getNodeParameter('from', itemIndex) as string
+	const rawTo = this.getNodeParameter('to', itemIndex) as string
+	const from = normalize ? toE164(rawFrom) : rawFrom.trim()
+	const to = normalize ? toE164(rawTo) : rawTo.trim()
 
-	const paramList = [['From', from], ['To', to]]
-	for (const [label, value] of paramList) {
+	const paramsList = [['From', from], ['To', to]]
+	for (const [label, value] of paramsList) {
 		if (!isValidE164(value)) {
 			throw new NodeOperationError(
 				this.getNode(),
@@ -37,7 +40,7 @@ export async function send(
 				{
 					itemIndex,
 					description:
-						'Numbers must be in E.164 format (ex: +13005550100).',
+						'Numbers must look like +13005550100 (E.164 format). Enable "Normalize Numbers to E.164" to convert common formats automatically.',
 				},
 			)
 		}
