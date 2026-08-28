@@ -50,14 +50,6 @@ export class VoxtelesysOAuth2Api implements ICredentialType {
 			description: 'Shown only once when generated. Regenerate in the Voxtelesys Portal if lost.',
 		},
 		{
-			displayName: 'Scope',
-			name: 'scope',
-			type: 'string',
-			default: '',
-			description:
-				'Space separated scopes. Leave empty to use every scope granted to the client in the Voxtelesys Portal.',
-		},
-		{
 			displayName: 'Region',
 			name: 'region',
 			type: 'options',
