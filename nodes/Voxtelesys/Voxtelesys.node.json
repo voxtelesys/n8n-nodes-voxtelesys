@@ -1,0 +1,19 @@
+{
+	"node": "n8n-nodes-base.voxtelesys",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Communication"],
+	"alias": ["SMS", "MMS", "RCS", "Text", "Text Message", "Messaging", "Voxtelesys"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://developer.voxtelesys.com/apis/authorization"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://developer.voxtelesys.com/apis/message"
+			}
+		]
+	}
+}
