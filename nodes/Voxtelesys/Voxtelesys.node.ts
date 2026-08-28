@@ -9,7 +9,10 @@ export class Voxtelesys extends VersionedNodeType {
 		const baseDescription: INodeTypeBaseDescription = {
 			displayName: 'Voxtelesys',
 			name: 'voxtelesys',
-			icon: 'file:voxtelesys.svg',
+			icon: {
+        dark: 'file:voxtelesys-dark.svg',
+        light: 'file:voxtelesys-light.svg'
+      },
 			group: ['output'],
 			subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 			description: 'Send SMS and MMS via Voxtelesys',
