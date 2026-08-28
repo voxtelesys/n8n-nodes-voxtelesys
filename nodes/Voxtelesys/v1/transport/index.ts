@@ -98,9 +98,8 @@ export interface PaginationStrategy {
 	nextCursor: (response: IDataObject) => string | undefined
 }
 
-// TODO: check the page size max
 export const cursorPagination: PaginationStrategy = {
-	pageSize: 50,
+	pageSize: 100,
 	buildQuery: (pageSize, cursor) => (cursor ? { page_size: pageSize, next_page: cursor } : { page_size: pageSize }),
 	extract: (response) => {
 		const page = response.results ?? response.messages ?? response.data ?? []
@@ -108,10 +107,10 @@ export const cursorPagination: PaginationStrategy = {
 	},
 	nextCursor: (response) => {
 		const cursor = response.next_page
-		if (cursor === null || cursor === undefined) return undefined
+		if (!cursor) return undefined
 		const value = String(cursor).trim()
-		return value === '' || value === 'null' ? undefined : value
-	},
+		return value || undefined
+	}
 }
 
 // Walk a cursor-paginated list endpoint
