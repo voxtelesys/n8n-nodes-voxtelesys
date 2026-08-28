@@ -47,7 +47,7 @@ export class VoxtelesysOAuth2Api implements ICredentialType {
 			typeOptions: { password: true },
 			default: '',
 			required: true,
-			description: 'Shown only once when generated. Regenerate in the Portal if lost.',
+			description: 'Shown only once when generated. Regenerate in the Voxtelesys Portal if lost.',
 		},
 		{
 			displayName: 'Scope',
@@ -55,7 +55,7 @@ export class VoxtelesysOAuth2Api implements ICredentialType {
 			type: 'string',
 			default: '',
 			description:
-				'Space separated scopes. Leave empty to use every scope granted to the client in the Portal.',
+				'Space separated scopes. Leave empty to use every scope granted to the client in the Voxtelesys Portal.',
 		},
 		{
 			displayName: 'Region',

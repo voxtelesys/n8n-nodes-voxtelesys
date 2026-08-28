@@ -18,6 +18,7 @@
   "homepage": "https://github.com/voxtelesys/n8n-nodes-voxtelesys#readme",
   "dependencies": {
     "@n8n/eslint-plugin-community-nodes": "^0.30.0",
-    "n8n-workflow": "^2.16.0"
+    "n8n-workflow": "^2.16.0",
+    "pnpm": "^11.24.0"
   }
 }
