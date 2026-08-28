@@ -1,18 +1,17 @@
-import type { ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { ICredentialType, INodeProperties } from 'n8n-workflow'
 
 /**
- * n8n handles token caching and refresh. Access tokens default to a one hour
- * lifetime, so this is the recommended credential for production workflows.
- *
+ * n8n handles token caching and refresh.
+ * Access tokens default to a one hour lifetime, so this is the recommended credential for production workflows.
  */
 export class VoxtelesysOAuth2Api implements ICredentialType {
-	name = 'voxtelesysOAuth2Api';
+	name = 'voxtelesysOAuth2Api'
 
-	extends = ['oAuth2Api'];
+	extends = ['oAuth2Api']
 
-	displayName = 'Voxtelesys OAuth2 API';
+	displayName = 'Voxtelesys OAuth2 API'
 
-	documentationUrl = 'https://developer.voxtelesys.com/apis/authorization';
+	documentationUrl = 'https://developer.voxtelesys.com/apis/authorization'
 
 	properties: INodeProperties[] = [
 		{
@@ -71,6 +70,6 @@ export class VoxtelesysOAuth2Api implements ICredentialType {
 			default: '',
 			description:
 				'Pin API requests to a specific region. Leave on Automatic to use the non-region-specific endpoint.',
-		},
-	];
+		}
+	]
 }
