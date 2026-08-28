@@ -60,8 +60,9 @@ export async function voxtelesysApiRequest(
 ): Promise<IDataObject> {
 	const credentialType = 'voxtelesysOAuth2Api'
 	const credentials = await this.getCredentials(credentialType)
+  if (!credentials) throw new Error('No valid credentials were found for this request.')
+  
 	const region = (credentials.region as string) || ''
-
 	const options: IHttpRequestOptions = {
 		method,
 		url: `${getBaseUrl(service, region)}${endpoint}`,
