@@ -14,9 +14,6 @@ importers:
       n8n-workflow:
         specifier: ^2.16.0
         version: 2.16.0
-      pnpm:
-        specifier: ^11.24.0
-        version: 11.24.0
 
 packages:
 
@@ -640,11 +637,6 @@ packages:
   picomatch@4.0.7:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
-
-  pnpm@11.24.0:
-    resolution: {integrity: sha512-vSfjRel23LC+C3oSKCF7BJqBfiGx81XJDb59xGZxiVqLwebQbCRVRQXqk+oLRfSJon7Bv7yN5qlln8oPFvoAAA==}
-    engines: {node: '>=22.13'}
-    hasBin: true
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -1465,8 +1457,6 @@ snapshots:
   path-key@3.1.1: {}
 
   picomatch@4.0.7: {}
-
-  pnpm@11.24.0: {}
 
   possible-typed-array-names@1.1.0: {}
 
