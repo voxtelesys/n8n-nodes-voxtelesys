@@ -30,7 +30,7 @@ export function normalizeAndValidate(
 	this: IExecuteFunctions,
 	label: string,
 	value: string,
-	options: { normalize: boolean; itemIndex: number },
+	options: { normalize: boolean, itemIndex: number },
 ): string {
 	const number = options.normalize ? toE164(value) : value.trim()
 
