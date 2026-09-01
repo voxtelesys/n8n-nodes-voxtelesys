@@ -2,7 +2,8 @@ import type { IDataObject, IExecuteFunctions, INodeExecutionData } from 'n8n-wor
 import { NodeOperationError } from 'n8n-workflow'
 
 import { voxtelesysApiRequest } from '../../transport'
-import { isValidE164, toE164 } from '../../helpers/statuses'
+import { normalizeAndValidate } from '../../helpers/phoneNumbers'
+import { applyCommonOptions } from '../../helpers/utils'
 
 /**
  * POST /sms
@@ -26,49 +27,33 @@ export async function send(
 	const options = this.getNodeParameter('options', itemIndex, {}) as IDataObject
 	const normalize = options.normalize !== false
 
-	const rawFrom = this.getNodeParameter('from', itemIndex) as string
-	const rawTo = this.getNodeParameter('to', itemIndex) as string
-	const from = normalize ? toE164(rawFrom) : rawFrom.trim()
-	const to = normalize ? toE164(rawTo) : rawTo.trim()
-
-	const paramsList = [['From', from], ['To', to]]
-	for (const [label, value] of paramsList) {
-		if (!isValidE164(value)) {
-			throw new NodeOperationError(
-				this.getNode(),
-				`${label} is not a valid E.164 number: "${value}"`,
-				{
-					itemIndex,
-					description:
-						'Numbers must look like +13005550100 (E.164 format). Enable "Normalize Numbers to E.164" to convert common formats automatically.',
-				},
-			)
-		}
-	}
+	const from = normalizeAndValidate.call(
+		this,
+		'From',
+		this.getNodeParameter('from', itemIndex) as string,
+		{ normalize, itemIndex },
+	)
+	const to = normalizeAndValidate.call(
+		this,
+		'To',
+		this.getNodeParameter('to', itemIndex) as string,
+		{ normalize, itemIndex },
+	)
 
 	const body: IDataObject = { from, to }
 
 	const message = this.getNodeParameter('body', itemIndex, '') as string
 	if (message) body.body = message
 
-	const media = (options.media as string[] | undefined)?.filter((url) => url && url.trim())
-	if (media?.length) body.media = media
+	applyCommonOptions.call(this, body, options, itemIndex)
 
+	// Runs after the options are applied, because media arrives with them.
 	if (!body.body && !body.media) {
 		throw new NodeOperationError(
 			this.getNode(),
 			'Provide a message, one or more media URLs, or both',
 			{ itemIndex },
 		)
-	}
-
-	if (options.tag) body.tag = options.tag as string
-	if (options.bulkTag) body.bulk_tag = options.bulkTag as string
-	if (options.statusCallbackUrl) {
-		body.status_callback = {
-			url: options.statusCallbackUrl as string,
-			method: (options.statusCallbackMethod as string) || 'POST',
-		}
 	}
 
 	const response = await voxtelesysApiRequest.call(this, 'sms', 'POST', '/sms', body)
