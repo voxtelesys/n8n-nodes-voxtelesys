@@ -7,9 +7,7 @@ import type {
 } from 'n8n-workflow'
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow'
 import { messageFields, messageOperations } from './actions/message/Message.resource'
-import { get as getMessage } from './actions/message/get.operation'
 import { send as sendMessage } from './actions/message/send.operation'
-import { sendBatch } from './actions/message/sendBatch.operation'
 
 export class VoxtelesysV1 implements INodeType {
 	description: INodeTypeDescription
@@ -68,10 +66,6 @@ export class VoxtelesysV1 implements INodeType {
 
 				if (resource === 'message' && operation === 'send') {
 					results = await sendMessage.call(this, i)
-				} else if(resource === 'message' && operation === 'sendBatch') {
-					results = await sendBatch.call(this, i)
-				} else if(resource === 'message' && operation === 'get') {
-					results = await getMessage.call(this, i)
 				} else {
 					throw new NodeOperationError(
 						this.getNode(),

@@ -3,21 +3,13 @@ import { NodeOperationError } from 'n8n-workflow'
 
 import { MAX_TAG_LENGTH } from './constants'
 
-/**
- * Both tags are length-capped strings; they differ only in which option feeds
- * which body field. The error names the option as the UI labels it, not as the
- * API spells it.
- */
+// Both tags are length-capped strings
 const TAG_FIELDS = [
 	{ optionName: 'tag', displayName: 'Tag', bodyField: 'tag' },
 	{ optionName: 'bulkTag', displayName: 'Bulk Tag', bodyField: 'bulk_tag' },
 ]
 
-/**
- * Apply the Options collection shared by Send and Send Batch onto the request
- * body. Options a given operation does not expose are simply absent, so the
- * same helper serves both.
- */
+// Apply the Send Options collection onto the request body. Options that are not exposed are omitted.
 export function applyCommonOptions(
 	this: IExecuteFunctions,
 	body: IDataObject,
@@ -39,8 +31,6 @@ export function applyCommonOptions(
 		}
 		body[bodyField] = value
 	}
-
-	if (options.expireAt) body.expire_at = new Date(options.expireAt as string).toISOString()
 
 	if (options.statusCallbackUrl) {
 		body.status_callback = {
