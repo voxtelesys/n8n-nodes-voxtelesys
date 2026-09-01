@@ -16,8 +16,8 @@ export function applyCommonOptions(
 	options: IDataObject,
 	itemIndex: number,
 ): void {
-	const media = (options.media as string[] | undefined)?.filter((url) => url && url.trim())
-	if (media?.length) body.media = media
+	const media = toMediaUrls.call(this, options.media, itemIndex)
+	if (media.length) body.media = media
 
 	for (const { optionName, displayName, bodyField } of TAG_FIELDS) {
 		const value = options[optionName] as string | undefined
@@ -38,4 +38,35 @@ export function applyCommonOptions(
 			method: (options.statusCallbackMethod as string) || 'POST',
 		}
 	}
+}
+
+/**
+ * Coerce the Media URLs field into a list of URL strings.
+ * Only a flat list of strings is accepted, everything else is rejected.
+**/
+function toMediaUrls(this: IExecuteFunctions, value: unknown, itemIndex: number): string[] {
+	const entries: unknown[] = Array.isArray(value) ? value : [value]
+	const urls: string[] = []
+
+	for (const entry of entries) {
+		if (!entry) continue
+
+		if (typeof entry !== 'string') {
+			const entryType = Array.isArray(entry) ? 'array' : typeof entry
+			throw new NodeOperationError(
+				this.getNode(),
+				`Media URLs must be URL strings, but one entry is a ${entryType}`,
+				{
+					itemIndex,
+					description:
+						'Add one entry per URL, or use an expression that resolves to a single URL string, such as {{ $json.imageUrl }}. An expression that returns an array of URLs is not accepted.',
+				},
+			)
+		}
+
+		const url = entry.trim()
+		if (url) urls.push(url)
+	}
+
+	return urls
 }
