@@ -43,8 +43,6 @@ export function getBaseUrl(service: VoxtelesysService, region?: string): string 
 }
 
 export interface VoxtelesysRequestOptions {
-	body?: IDataObject
-	qs?: IDataObject
 	headers?: Record<string, string>
 	timeout?: number
 }
@@ -56,31 +54,32 @@ export async function voxtelesysApiRequest(
 	endpoint: string,
 	body: IDataObject = {},
 	qs: IDataObject = {},
-	extra: VoxtelesysRequestOptions = {},
+	options: VoxtelesysRequestOptions = {},
 ): Promise<IDataObject> {
 	const credentialType = 'voxtelesysOAuth2Api'
 	const credentials = await this.getCredentials(credentialType)
+  if (!credentials) throw new Error('No valid credentials were found for this request.')
+  
 	const region = (credentials.region as string) || ''
-
-	const options: IHttpRequestOptions = {
+	const config: IHttpRequestOptions = {
 		method,
 		url: `${getBaseUrl(service, region)}${endpoint}`,
 		headers: {
 			'User-Agent': USER_AGENT,
-			...(extra.headers ?? {}),
+			...(options.headers ?? {}),
 		},
 		json: true,
-		timeout: extra.timeout,
+		timeout: options.timeout,
 	}
 
-	if (Object.keys(body).length > 0) options.body = body
-	if (Object.keys(qs).length > 0) options.qs = qs
+	if (Object.keys(body).length > 0) config.body = body
+	if (Object.keys(qs).length > 0) config.qs = qs
 
   try {
     return (await this.helpers.httpRequestWithAuthentication.call(
       this,
       credentialType,
-      options,
+      config,
     )) as IDataObject
   } catch (error) {
     throw error
@@ -98,9 +97,8 @@ export interface PaginationStrategy {
 	nextCursor: (response: IDataObject) => string | undefined
 }
 
-// TODO: check the page size max
 export const cursorPagination: PaginationStrategy = {
-	pageSize: 50,
+	pageSize: 100,
 	buildQuery: (pageSize, cursor) => (cursor ? { page_size: pageSize, next_page: cursor } : { page_size: pageSize }),
 	extract: (response) => {
 		const page = response.results ?? response.messages ?? response.data ?? []
@@ -108,10 +106,10 @@ export const cursorPagination: PaginationStrategy = {
 	},
 	nextCursor: (response) => {
 		const cursor = response.next_page
-		if (cursor === null || cursor === undefined) return undefined
+		if (!cursor) return undefined
 		const value = String(cursor).trim()
-		return value === '' || value === 'null' ? undefined : value
-	},
+		return value || undefined
+	}
 }
 
 // Walk a cursor-paginated list endpoint
