@@ -70,12 +70,20 @@ export const messageFields: INodeProperties[] = [
 		displayOptions: showFor(['send']),
 		options: [
 			{
+				displayName: 'Tag',
+				name: 'tag',
+				type: 'string',
+				default: '',
+				description:
+					'Custom string echoed back on the delivery report and included on the delivery receipt. Use it to carry business context such as an order ID. Max 256 characters.',
+			},
+			{
 				displayName: 'Bulk Tag',
 				name: 'bulkTag',
 				type: 'string',
 				default: '',
 				description:
-					'Groups related messages together, for example every message in one campaign. Returned on delivery reports as bulk_tag. Max 256 characters.',
+					'Used to store an external identifier for a batch of messages which is included in callback events. Max 256 characters.',
 			},
 			{
 				displayName: 'Media URLs',
@@ -85,7 +93,7 @@ export const messageFields: INodeProperties[] = [
 				default: [],
 				placeholder: 'https://example.com/image.jpg',
 				description:
-					'Publicly reachable URLs to attach as MMS. Providing media makes this an MMS rather than an SMS.',
+					'Publicly reachable URLs to attach as MMS message. Providing media makes this an MMS message rather than an SMS message.',
 			},
 			{
 				displayName: 'Normalize Numbers to E.164',
@@ -94,18 +102,6 @@ export const messageFields: INodeProperties[] = [
 				default: true,
 				description:
 					'Whether to convert loosely formatted numbers such as (300) 555-0100 into E.164 before sending',
-			},
-			{
-				displayName: 'Status Callback Method',
-				name: 'statusCallbackMethod',
-				type: 'options',
-				options: [
-					{ name: 'POST', value: 'POST' },
-					{ name: 'GET', value: 'GET' },
-				],
-				default: 'POST',
-				description:
-					'HTTP method Voxtelesys uses when calling the status callback URL. Ignored unless a Status Callback URL is set.',
 			},
 			{
 				displayName: 'Status Callback URL',
@@ -117,13 +113,22 @@ export const messageFields: INodeProperties[] = [
 					'Per-message delivery receipt destination, overriding the Messaging Application DR webhook. Fires on every status change, including intermediate ones. Pair with {{ $execution.resumeUrl }} and a Wait node, branching on the status and looping back for non-final values.',
 			},
 			{
-				displayName: 'Tag',
-				name: 'tag',
-				type: 'string',
-				default: '',
-				description:
-					'Custom string echoed back on the delivery report and on Get. Use it to carry business context such as an order ID. Max 256 characters.',
-			},
+				displayName: 'Status Callback Method',
+				name: 'statusCallbackMethod',
+				type: 'options',
+				options: [
+					{ name: 'POST', value: 'POST' },
+					{ name: 'GET', value: 'GET' },
+				],
+				default: 'POST',
+				// Only offered once a callback URL is set, so the method can never be stored on its own
+				displayOptions: {
+					show: {
+						statusCallbackUrl: [{ _cnd: { not: '' } }],
+					},
+				},
+				description: 'HTTP method Voxtelesys uses when calling the status callback URL',
+			}
 		],
 	},
 ]

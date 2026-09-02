@@ -11,7 +11,7 @@ import {
 
 import { USER_AGENT } from './version'
 
-export type VoxtelesysService = 'sms' | 'rcs' | 'flow'
+export type VoxtelesysService = 'sms'
 
 type RequestContext = IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions
 
@@ -23,9 +23,7 @@ interface ServiceDescriptor {
 }
 
 const SERVICES: Record<VoxtelesysService, ServiceDescriptor> = {
-	sms: { host: 'smsapi', version: 'v2', regional: true },
-	rcs: { host: 'rcsapi', version: 'v1', regional: false },
-	flow: { host: 'flowapi', version: 'v1', regional: false },
+	sms: { host: 'smsapi', version: 'v2', regional: true }
 }
 
 export const VOXTELESYS_REGIONS = ['slc', 'dfw', 'pit'] as const

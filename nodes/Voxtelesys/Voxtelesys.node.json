@@ -3,7 +3,7 @@
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Communication"],
-	"alias": ["SMS", "MMS", "RCS", "Text", "Text Message", "Messaging", "Voxtelesys"],
+	"alias": ["SMS", "MMS", "Text", "Text Message", "Messaging", "Voxtelesys"],
 	"resources": {
 		"credentialDocumentation": [
 			{
