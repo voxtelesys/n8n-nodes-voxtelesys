@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +17,14 @@
   "bugs": {
     "url": "https://github.com/voxtelesys/n8n-nodes-voxtelesys/issues"
   },
-  "homepage": "https://github.com/voxtelesys/n8n-nodes-voxtelesys#readme"
+  "homepage": "https://github.com/voxtelesys/n8n-nodes-voxtelesys#readme",
+  "dependencies": {
+    "@n8n/eslint-plugin-community-nodes": "^0.30.0",
+    "n8n-workflow": "^2.16.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^8.68.0",
+    "eslint": "9.29.0",
+    "typescript": "^6.0.3"
+  }
 }
