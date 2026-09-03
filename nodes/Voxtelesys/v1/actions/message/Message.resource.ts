@@ -121,10 +121,10 @@ export const messageFields: INodeProperties[] = [
 					{ name: 'GET', value: 'GET' },
 				],
 				default: 'POST',
-				// Only offered once a callback URL is set, so the method can never be stored on its own
+				// Only available once a callback URL is set
 				displayOptions: {
 					show: {
-						statusCallbackUrl: [{ _cnd: { not: '' } }],
+						statusCallbackUrl: [{ _cnd: { exists: true } }],
 					},
 				},
 				description: 'HTTP method Voxtelesys uses when calling the status callback URL',
