@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-voxtelesys",
+  "name": "@voxtelesys/n8n-nodes-voxtelesys",
   "version": "0.1.0",
   "description": "n8n community node for the Voxtelesys Messaging API",
   "keywords": [
@@ -39,6 +39,7 @@
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
+    "strict": true,
     "credentials": [
       "dist/credentials/VoxtelesysOAuth2Api.credentials.js"
     ],
