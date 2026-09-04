@@ -9,7 +9,14 @@ const TAG_FIELDS = [
 	{ optionName: 'bulkTag', displayName: 'Bulk Tag', bodyField: 'bulk_tag' },
 ]
 
-// Apply the Send Options collection onto the request body. Options that are not exposed are omitted.
+/**
+ * Apply the Send Options collection onto the request body. Options that are not exposed are omitted.
+ *
+ * @param body - Request body that is mutated in place
+ * @param options - Send Options collection values
+ * @param itemIndex - Index of the item being processed, used in error messages
+ * @throws {NodeOperationError} When a tag exceeds the maximum length or a media entry is not a string
+ */
 export function applyCommonOptions(
 	this: IExecuteFunctions,
 	body: IDataObject,
@@ -43,7 +50,12 @@ export function applyCommonOptions(
 /**
  * Coerce the Media URLs field into a list of URL strings.
  * Only a flat list of strings is accepted, everything else is rejected.
-**/
+ *
+ * @param value - Raw Media URLs field value
+ * @param itemIndex - Index of the item being processed, used in error messages
+ * @returns The media URLs as trimmed strings
+ * @throws {NodeOperationError} When an entry is not a string
+*/
 function toMediaUrls(this: IExecuteFunctions, value: unknown, itemIndex: number): string[] {
 	const entries: unknown[] = Array.isArray(value) ? value : [value]
 	const urls: string[] = []
