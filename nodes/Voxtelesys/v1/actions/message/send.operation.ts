@@ -42,19 +42,18 @@ export async function send(
 
 	const body: IDataObject = { from, to }
 
+	// Message is required on every request, even if there is media attached
 	const message = this.getNodeParameter('body', itemIndex, '') as string
-	if (message) body.body = message
+	if (!message.trim()) {
+		throw new NodeOperationError(this.getNode(), 'Message is required', {
+			itemIndex,
+			description:
+				'Every send needs a message body, including an MMS message that also carries media. Add Media URLs under Options to send an MMS message.',
+		})
+	}
+	body.body = message
 
 	applyCommonOptions.call(this, body, options, itemIndex)
-
-	// Runs after the options are applied, because media arrives with them.
-	if (!body.body && !body.media) {
-		throw new NodeOperationError(
-			this.getNode(),
-			'Provide a message, one or more media URLs, or both',
-			{ itemIndex },
-		)
-	}
 
 	const response = await voxtelesysApiRequest.call(this, 'sms', 'POST', '/sms', body)
 

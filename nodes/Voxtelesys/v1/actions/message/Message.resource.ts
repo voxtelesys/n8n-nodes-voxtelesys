@@ -47,7 +47,7 @@ export const messageFields: INodeProperties[] = [
 		required: true,
 		placeholder: '+13003003001',
 		description:
-			'Recipient phone number, in E.164 format.',
+			'Recipient phone number, in E.164 format',
 		displayOptions: showFor(['send']),
 	},
 	{
@@ -68,15 +68,8 @@ export const messageFields: INodeProperties[] = [
 		placeholder: 'Add option',
 		default: {},
 		displayOptions: showFor(['send']),
+		// Collection options must be ordered alphabetically by display name
 		options: [
-			{
-				displayName: 'Tag',
-				name: 'tag',
-				type: 'string',
-				default: '',
-				description:
-					'String which will be included in callback events (max 256 chars), typically used to store an external identifier for the message',
-			},
 			{
 				displayName: 'Bulk Tag',
 				name: 'bulkTag',
@@ -104,21 +97,12 @@ export const messageFields: INodeProperties[] = [
 					'Whether to convert loosely formatted numbers such as (300) 555-0100 into E.164 before sending',
 			},
 			{
-				displayName: 'Status Callback URL',
-				name: 'statusCallbackUrl',
-				type: 'string',
-				default: '',
-				placeholder: '{{ $execution.resumeUrl }}',
-				description:
-					'The URL to send callbacks to when the status of the message is updated, overriding the Messaging Application DR webhook for this message. Statuses include the intermediate queued and delivering as well as the final delivered, failed, unknown and expired. Pair with {{ $execution.resumeUrl }} and a Wait node, branching on the status and looping back for non-final values.',
-			},
-			{
 				displayName: 'Status Callback Method',
 				name: 'statusCallbackMethod',
 				type: 'options',
 				options: [
-					{ name: 'POST', value: 'POST' },
 					{ name: 'GET', value: 'GET' },
+					{ name: 'POST', value: 'POST' },
 				],
 				default: 'POST',
 				// Only available once a callback URL is set
@@ -128,7 +112,24 @@ export const messageFields: INodeProperties[] = [
 					},
 				},
 				description: 'The HTTP method to use for status callbacks. Defaults to POST.',
-			}
+			},
+			{
+				displayName: 'Status Callback URL',
+				name: 'statusCallbackUrl',
+				type: 'string',
+				default: '',
+				placeholder: '{{ $execution.resumeUrl }}',
+				description:
+					'The URL to send callbacks to when the status of the message is updated, overriding the Messaging Application DR webhook for this message. Statuses include the intermediate queued and delivering as well as the final delivered, failed, unknown and expired. Pair with {{ $execution.resumeUrl }} and a Wait node, branching on the status and looping back for non-final values.',
+			},
+			{
+				displayName: 'Tag',
+				name: 'tag',
+				type: 'string',
+				default: '',
+				description:
+					'String which will be included in callback events (max 256 chars), typically used to store an external identifier for the message',
+			},
 		],
 	},
 ]

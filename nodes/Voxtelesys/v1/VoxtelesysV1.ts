@@ -4,8 +4,9 @@ import type {
 	INodeType,
 	INodeTypeBaseDescription,
 	INodeTypeDescription,
+	JsonObject,
 } from 'n8n-workflow'
-import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow'
+import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow'
 import { messageFields, messageOperations } from './actions/message/Message.resource'
 import { send as sendMessage } from './actions/message/send.operation'
 
@@ -83,7 +84,10 @@ export class VoxtelesysV1 implements INodeType {
 					})
 					continue
 				}
-				throw error
+				if (error instanceof NodeApiError) {
+					throw new NodeApiError(this.getNode(), error as unknown as JsonObject)
+				}
+				throw new NodeOperationError(this.getNode(), error as Error, { itemIndex: i })
 			}
 		}
 

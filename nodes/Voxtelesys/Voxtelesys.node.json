@@ -1,5 +1,5 @@
 {
-	"node": "n8n-nodes-base.voxtelesys",
+	"node": "n8n-nodes-voxtelesys.voxtelesys",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Communication"],

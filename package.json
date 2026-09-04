@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-voxtelesys",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "n8n community node for the Voxtelesys Messaging API",
   "keywords": [
     "n8n-community-node-package",
@@ -26,7 +26,6 @@
   "engines": {
     "node": ">=20.15"
   },
-  "main": "index.js",
   "scripts": {
     "build": "npx rimraf dist .tsbuildinfo && tsc && gulp build:assets",
     "dev": "tsc --watch",
@@ -47,11 +46,8 @@
       "dist/nodes/Voxtelesys/Voxtelesys.node.js"
     ]
   },
-  "dependencies": {
-    "@n8n/eslint-plugin-community-nodes": "^0.30.0",
-    "n8n-workflow": "^2.16.0"
-  },
   "devDependencies": {
+    "@n8n/eslint-plugin-community-nodes": "^0.30.0",
     "@types/node": "^22.10.0",
     "@typescript-eslint/parser": "^8.68.0",
     "eslint": "9.29.0",
