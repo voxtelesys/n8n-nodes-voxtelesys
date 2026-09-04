@@ -34,9 +34,9 @@ export const messageFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		placeholder: '+13005550100',
+		placeholder: '+13003003000',
 		description:
-			'Sending number in E.164 format. Must be SMS enabled and assigned to the same service trunk group as your credential.',
+			'Sender phone number. Must be in E.164 format: a plus sign, country code, then subscriber number, with no spaces, dashes or parentheses.',
 		displayOptions: showFor(['send']),
 	},
 	{
@@ -45,9 +45,9 @@ export const messageFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		placeholder: '+13005550101',
+		placeholder: '+13003003001',
 		description:
-			'Recipient number in E.164 format. To message many recipients, pass one input item per recipient.',
+			'Recipient phone number, in E.164 format.',
 		displayOptions: showFor(['send']),
 	},
 	{
@@ -58,7 +58,7 @@ export const messageFields: INodeProperties[] = [
 		default: '',
 		required: true,
 		description:
-			'Text body of the message. Required on every send, including an MMS that also carries media.',
+			'Message body. Required on every send, including an MMS that also carries media.',
 		displayOptions: showFor(['send']),
 	},
 	{
@@ -75,7 +75,7 @@ export const messageFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description:
-					'Custom string echoed back on the delivery report and included on the delivery receipt. Use it to carry business context such as an order ID. Max 256 characters.',
+					'String which will be included in callback events (max 256 chars), typically used to store an external identifier for the message',
 			},
 			{
 				displayName: 'Bulk Tag',
@@ -83,7 +83,7 @@ export const messageFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description:
-					'Used to store an external identifier for a batch of messages which is included in callback events. Max 256 characters.',
+					'String which will be included in callback events (max 256 chars), typically used to store an external identifier for a batch of messages',
 			},
 			{
 				displayName: 'Media URLs',
@@ -91,9 +91,9 @@ export const messageFields: INodeProperties[] = [
 				type: 'string',
 				typeOptions: { multipleValues: true, multipleValueButtonText: 'Add media URL' },
 				default: [],
-				placeholder: 'https://example.com/image.jpg',
+				placeholder: 'https://path.to.image',
 				description:
-					'Publicly reachable URLs to attach as MMS message. Providing media makes this an MMS message rather than an SMS message.',
+					'List of publicly reachable URLs to include as media attachments. Providing media sends the message as an MMS message rather than an SMS message.',
 			},
 			{
 				displayName: 'Normalize Numbers to E.164',
@@ -110,7 +110,7 @@ export const messageFields: INodeProperties[] = [
 				default: '',
 				placeholder: '{{ $execution.resumeUrl }}',
 				description:
-					'Per-message delivery receipt destination, overriding the Messaging Application DR webhook. Fires on every status change, including intermediate ones. Pair with {{ $execution.resumeUrl }} and a Wait node, branching on the status and looping back for non-final values.',
+					'The URL to send callbacks to when the status of the message is updated, overriding the Messaging Application DR webhook for this message. Statuses include the intermediate queued and delivering as well as the final delivered, failed, unknown and expired. Pair with {{ $execution.resumeUrl }} and a Wait node, branching on the status and looping back for non-final values.',
 			},
 			{
 				displayName: 'Status Callback Method',
@@ -127,7 +127,7 @@ export const messageFields: INodeProperties[] = [
 						statusCallbackUrl: [{ _cnd: { exists: true } }],
 					},
 				},
-				description: 'HTTP method Voxtelesys uses when calling the status callback URL',
+				description: 'The HTTP method to use for status callbacks. Defaults to POST.',
 			}
 		],
 	},
