@@ -14,7 +14,7 @@ export class Voxtelesys extends VersionedNodeType {
         light: 'file:voxtelesys-light.svg'
       },
 			group: ['output'],
-			subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
+			subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 			description: 'Send SMS and MMS via Voxtelesys',
 			defaultVersion: 1,
 		}
