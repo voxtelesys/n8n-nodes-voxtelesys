@@ -1,0 +1,76 @@
+# Publishes this n8n community node to npm with a provenance attestation.
+#
+# n8n requires all community nodes submitted for verification to be published
+# from a CI workflow with npm provenance (mandatory since 2026-05-01). The
+# attestation cryptographically ties the published tarball to this repository
+# and commit, and n8n's scanner rejects packages that lack it:
+#
+#   npx @n8n/scan-community-package @voxtelesys/n8n-nodes-voxtelesys
+#
+# Publishing from a laptop cannot produce an attestation, so releases must go
+# through this workflow.
+#
+# ─── ONE-TIME SETUP ───────────────────────────────────────────────────────────
+#
+# Add an NPM_TOKEN repository secret (Settings -> Secrets and variables ->
+# Actions). Generate it on npmjs.com as a Granular Access Token scoped to all
+# packages in the @voxtelesys organization with read+write permission — scope it
+# to the org rather than the package, which does not exist until the first
+# publish succeeds.
+#
+# Once the package exists, npm Trusted Publishing (OIDC) can replace the token:
+# add a Trusted Publisher under the package's settings (owner `voxtelesys`,
+# repo `n8n-nodes-voxtelesys`, workflow `publish.yml`), then delete the secret.
+# Provenance is signed by the OIDC token below either way.
+#
+# ─── RELEASING ────────────────────────────────────────────────────────────────
+#
+# Bump "version" in package.json, commit to the default branch, then tag it:
+#
+#   git tag 0.2.0 && git push origin 0.2.0
+#
+# The tag must match the version in package.json — npm rejects a republish of
+# an existing version, and the tag is what identifies the release commit.
+
+name: Publish
+
+on:
+  push:
+    tags:
+      # Matches 0.1.0, 1.2.3, 2.0.0-rc.1
+      - '*.*.*'
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Required to mint the OIDC token that signs the provenance attestation.
+      id-token: write
+      # Scoped down from the default for least-privilege publishing.
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads the pnpm version from the "packageManager" field in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # `prepublishOnly` runs build and lint, so both gate the publish.
+      # --access public is required because the package is scoped; npm would
+      # otherwise default it to restricted.
+      - name: Publish
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

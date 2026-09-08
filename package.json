@@ -1,0 +1,67 @@
+{
+  "name": "@voxtelesys/n8n-nodes-voxtelesys",
+  "version": "0.1.0",
+  "description": "n8n community node for the Voxtelesys Messaging API",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "voxtelesys",
+    "sms",
+    "mms",
+    "messaging"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/voxtelesys/n8n-nodes-voxtelesys#readme",
+  "author": {
+    "name": "Voxtelesys",
+    "email": "support@voxtelesys.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voxtelesys/n8n-nodes-voxtelesys.git"
+  },
+  "bugs": {
+    "url": "https://github.com/voxtelesys/n8n-nodes-voxtelesys/issues"
+  },
+  "engines": {
+    "node": ">=20.15"
+  },
+  "packageManager": "pnpm@11.1.0",
+  "scripts": {
+    "build": "npx rimraf dist .tsbuildinfo && tsc && gulp build:assets",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "n8n-node lint",
+    "lintfix": "n8n-node lint --fix",
+    "prepublishOnly": "npm run build && npm run lint"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/VoxtelesysOAuth2Api.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Voxtelesys/Voxtelesys.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/eslint-plugin-community-nodes": "^0.30.0",
+    "@n8n/node-cli": "^0.47.0",
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/parser": "^8.68.0",
+    "eslint": "9.29.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.3",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "*",
+    "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
