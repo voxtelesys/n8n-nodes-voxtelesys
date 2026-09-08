@@ -1,3 +1,7 @@
 allowBuilds:
   eslint-plugin-n8n-nodes-base: false
   isolated-vm: false
+  # Due to n8n/node-cli - set all to false
+  cpu-features: false
+  ssh2: false
+  unrs-resolver: false

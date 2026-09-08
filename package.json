@@ -31,8 +31,8 @@
     "build": "npx rimraf dist .tsbuildinfo && tsc && gulp build:assets",
     "dev": "tsc --watch",
     "format": "prettier nodes credentials --write",
-    "lint": "eslint nodes credentials package.json",
-    "lintfix": "eslint nodes credentials package.json --fix",
+    "lint": "n8n-node lint",
+    "lintfix": "n8n-node lint --fix",
     "prepublishOnly": "npm run build && npm run lint"
   },
   "files": [
@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@n8n/eslint-plugin-community-nodes": "^0.30.0",
+    "@n8n/node-cli": "^0.47.0",
     "@types/node": "^22.10.0",
     "@typescript-eslint/parser": "^8.68.0",
     "eslint": "9.29.0",
