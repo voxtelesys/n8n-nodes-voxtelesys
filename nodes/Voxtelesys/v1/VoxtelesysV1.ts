@@ -34,9 +34,7 @@ export class VoxtelesysV1 implements INodeType {
 					name: 'authentication',
 					type: 'options',
 					noDataExpression: true,
-					options: [
-						{ name: 'OAuth2', value: 'oAuth2' }
-					],
+					options: [{ name: 'OAuth2', value: 'oAuth2' }],
 					default: 'oAuth2',
 				},
 				{
@@ -44,13 +42,11 @@ export class VoxtelesysV1 implements INodeType {
 					name: 'resource',
 					type: 'options',
 					noDataExpression: true,
-					options: [
-						{ name: 'Message', value: 'message' }
-					],
+					options: [{ name: 'Message', value: 'message' }],
 					default: 'message',
 				},
 				...messageOperations,
-				...messageFields
+				...messageFields,
 			],
 		}
 	}

@@ -1,9 +1,4 @@
-import type {
-	Icon,
-	ICredentialTestRequest,
-	ICredentialType,
-	INodeProperties,
-} from 'n8n-workflow'
+import type { Icon, ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow'
 
 /**
  * n8n handles token caching and refresh.
@@ -72,7 +67,7 @@ export class VoxtelesysOAuth2Api implements ICredentialType {
 			default: '',
 			description:
 				'Pin API requests to a specific region. Leave on Automatic to use the non-region-specific endpoint.',
-		}
+		},
 	]
 
 	/**

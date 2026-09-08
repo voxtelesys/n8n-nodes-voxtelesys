@@ -23,7 +23,8 @@ export function toE164(input: string, defaultCountryCode = '1'): string {
 	if (digits.length === 0) return trimmed
 
 	if (defaultCountryCode === '1' && digits.length === 10) return `+1${digits}`
-	if (defaultCountryCode === '1' && digits.length === 11 && digits.startsWith('1')) return `+${digits}`
+	if (defaultCountryCode === '1' && digits.length === 11 && digits.startsWith('1'))
+		return `+${digits}`
 
 	return `+${digits}`
 }
@@ -69,7 +70,7 @@ export function normalizeAndValidate(
 	this: IExecuteFunctions,
 	label: string,
 	value: string,
-	options: { normalize: boolean, itemIndex: number },
+	options: { normalize: boolean; itemIndex: number },
 ): string {
 	const number = options.normalize ? toE164(value) : value.trim()
 

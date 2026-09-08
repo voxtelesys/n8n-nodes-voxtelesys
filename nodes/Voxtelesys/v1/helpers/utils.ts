@@ -55,7 +55,7 @@ export function applyCommonOptions(
  * @param itemIndex - Index of the item being processed, used in error messages
  * @returns The media URLs as trimmed strings
  * @throws {NodeOperationError} When an entry is not a string
-*/
+ */
 function toMediaUrls(this: IExecuteFunctions, value: unknown, itemIndex: number): string[] {
 	const entries: unknown[] = Array.isArray(value) ? value : [value]
 	const urls: string[] = []

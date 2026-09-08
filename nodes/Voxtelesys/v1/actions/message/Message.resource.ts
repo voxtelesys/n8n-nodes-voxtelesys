@@ -46,8 +46,7 @@ export const messageFields: INodeProperties[] = [
 		default: '',
 		required: true,
 		placeholder: '+13003003001',
-		description:
-			'Recipient phone number, in E.164 format',
+		description: 'Recipient phone number, in E.164 format',
 		displayOptions: showFor(['send']),
 	},
 	{
@@ -57,8 +56,7 @@ export const messageFields: INodeProperties[] = [
 		typeOptions: { rows: 4 },
 		default: '',
 		required: true,
-		description:
-			'Message body. Required on every send.',
+		description: 'Message body. Required on every send.',
 		displayOptions: showFor(['send']),
 	},
 	{

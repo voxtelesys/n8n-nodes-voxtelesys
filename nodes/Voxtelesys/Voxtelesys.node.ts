@@ -10,9 +10,9 @@ export class Voxtelesys extends VersionedNodeType {
 			displayName: 'Voxtelesys',
 			name: 'voxtelesys',
 			icon: {
-        dark: 'file:voxtelesys-dark.svg',
-        light: 'file:voxtelesys-light.svg'
-      },
+				dark: 'file:voxtelesys-dark.svg',
+				light: 'file:voxtelesys-light.svg',
+			},
 			group: ['output'],
 			subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 			description: 'Send SMS and MMS via Voxtelesys',
