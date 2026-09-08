@@ -1,6 +1,7 @@
 import {
   JsonObject,
   NodeApiError,
+  NodeOperationError,
 	type IDataObject,
 	type IExecuteFunctions,
 	type IHookFunctions,
@@ -11,7 +12,7 @@ import {
 
 import { USER_AGENT } from './version'
 
-export type VoxtelesysService = 'sms' | 'rcs' | 'flow'
+export type VoxtelesysService = 'sms'
 
 type RequestContext = IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions
 
@@ -23,13 +24,10 @@ interface ServiceDescriptor {
 }
 
 const SERVICES: Record<VoxtelesysService, ServiceDescriptor> = {
-	sms: { host: 'smsapi', version: 'v2', regional: true },
-	rcs: { host: 'rcsapi', version: 'v1', regional: false },
-	flow: { host: 'flowapi', version: 'v1', regional: false },
+	sms: { host: 'smsapi', version: 'v2', regional: true }
 }
 
-export const VOXTELESYS_REGIONS = ['slc', 'dfw', 'pit'] as const
-export type VoxtelesysRegion = (typeof VOXTELESYS_REGIONS)[number]
+const VOXTELESYS_REGIONS = ['slc', 'dfw', 'pit']
 
 export function getBaseUrl(service: VoxtelesysService, region?: string): string {
 	const descriptor = SERVICES[service]
@@ -58,8 +56,12 @@ export async function voxtelesysApiRequest(
 ): Promise<IDataObject> {
 	const credentialType = 'voxtelesysOAuth2Api'
 	const credentials = await this.getCredentials(credentialType)
-  if (!credentials) throw new Error('No valid credentials were found for this request.')
-  
+  if (!credentials) {
+    throw new NodeOperationError(this.getNode(), 'No valid credentials were found for this request', {
+      description: 'Select a Voxtelesys OAuth2 credential on this node, or create one if none exists yet.',
+    })
+  }
+
 	const region = (credentials.region as string) || ''
 	const config: IHttpRequestOptions = {
 		method,
@@ -82,85 +84,7 @@ export async function voxtelesysApiRequest(
       config,
     )) as IDataObject
   } catch (error) {
-    throw error
+    // The request helper throws raw HTTP errors, which lose their status code and response body in the n8n UI unless they are wrapped.
+    throw new NodeApiError(this.getNode(), error as JsonObject)
   }
-}
-
-// walking list endpoint
-export interface PaginationStrategy {
-	pageSize: number
-	/** Query parameters for a page. `cursor` is undefined on the first request. */
-	buildQuery: (pageSize: number, cursor?: string) => IDataObject
-	/** Pull the array of records out of a response body. */
-	extract: (response: IDataObject) => IDataObject[]
-	/** Cursor for the next page, or undefined when the last page has been read. */
-	nextCursor: (response: IDataObject) => string | undefined
-}
-
-export const cursorPagination: PaginationStrategy = {
-	pageSize: 100,
-	buildQuery: (pageSize, cursor) => (cursor ? { page_size: pageSize, next_page: cursor } : { page_size: pageSize }),
-	extract: (response) => {
-		const page = response.results ?? response.messages ?? response.data ?? []
-		return Array.isArray(page) ? (page as IDataObject[]) : []
-	},
-	nextCursor: (response) => {
-		const cursor = response.next_page
-		if (!cursor) return undefined
-		const value = String(cursor).trim()
-		return value || undefined
-	}
-}
-
-// Walk a cursor-paginated list endpoint
-export async function voxtelesysApiRequestAllItems(
-	this: IExecuteFunctions | ILoadOptionsFunctions,
-	service: VoxtelesysService,
-	method: IHttpRequestMethods,
-	endpoint: string,
-	body: IDataObject = {},
-	qs: IDataObject = {},
-	maxItems?: number,
-	strategy: PaginationStrategy = cursorPagination,
-): Promise<IDataObject[]> {
-	const results: IDataObject[] = []
-	const pageSize = maxItems ? Math.min(strategy.pageSize, Math.max(1, maxItems)) : strategy.pageSize
-
-	let cursor: string | undefined;
-	const seenCursors = new Set<string>()
-
-	// Hard ceiling so a malformed contract cannot spin forever.
-	const MAX_PAGES = 100
-
-	for (let page = 0; page < MAX_PAGES; page++) {
-		const response = await voxtelesysApiRequest.call(this, service, method, endpoint, body, {
-			...qs,
-			...strategy.buildQuery(pageSize, cursor),
-		})
-
-		const records = strategy.extract(response)
-		if (records.length === 0) break
-
-		for (const record of records) {
-			results.push(record)
-			if (maxItems && results.length >= maxItems) return results
-		}
-
-		const next = strategy.nextCursor(response)
-		if (!next) break
-
-		// A repeated cursor means the endpoint is not advancing. Fail loudly
-		// rather than accumulating duplicates until the page ceiling.
-		if (seenCursors.has(next)) {
-			throw new NodeApiError(this.getNode(), {
-				message: 'Pagination did not advance',
-				description:
-					'The API returned the same next_page cursor twice. Stopping to avoid fetching duplicate records.',
-			} as JsonObject)
-		}
-		seenCursors.add(next)
-		cursor = next
-	}
-
-	return results
 }

@@ -1,0 +1,48 @@
+# Runs lint and build on every pull request and every push to main.
+#
+# This is the safety net for releases: `publish.yml` runs `prepublishOnly`
+# (build + lint) as part of `npm publish`, so a lint or build failure aborts a
+# release halfway through. Catching it here means a tag push never fails for a
+# reason that was already visible on the branch.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+# Cancel in-progress runs for the same branch/PR to avoid wasting CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Lint and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Must run before setup-node so the pnpm cache can be resolved.
+      # Reads the pnpm version from the "packageManager" field in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      # --frozen-lockfile fails if pnpm-lock.yaml is out of sync with
+      # package.json, so a stale lockfile is caught here rather than at publish.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run build
+        run: npm run build
