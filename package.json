@@ -1,6 +1,6 @@
 {
   "name": "@voxtelesys/n8n-nodes-voxtelesys",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n community node for the Voxtelesys Messaging API",
   "keywords": [
     "n8n-community-node-package",
