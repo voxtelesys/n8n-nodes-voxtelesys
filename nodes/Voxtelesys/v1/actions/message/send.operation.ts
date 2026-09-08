@@ -48,7 +48,7 @@ export async function send(
 		throw new NodeOperationError(this.getNode(), 'Message is required', {
 			itemIndex,
 			description:
-				'Every send needs a message body, including an MMS message that also carries media. Add Media URLs under Options to send an MMS message.',
+				'Every send needs a message body. Add Media URLs under Options to send an MMS message.',
 		})
 	}
 	body.body = message

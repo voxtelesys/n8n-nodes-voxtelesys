@@ -14,7 +14,7 @@
 #
 # Add an NPM_TOKEN repository secret (Settings -> Secrets and variables ->
 # Actions). Generate it on npmjs.com as a Granular Access Token scoped to all
-# packages in the @voxtelesys organisation with read+write permission — scope it
+# packages in the @voxtelesys organization with read+write permission — scope it
 # to the org rather than the package, which does not exist until the first
 # publish succeeds.
 #
