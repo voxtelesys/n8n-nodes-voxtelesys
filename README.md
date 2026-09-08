@@ -9,6 +9,7 @@ This is an n8n community node. It lets you send SMS and MMS messages with Voxtel
 [Operations](#operations)  
 [Credentials](#credentials)  
 [Compatibility](#compatibility)  
+[Usage](#usage)  
 [Resources](#resources)  
 [Version history](#version-history)
 
@@ -56,6 +57,52 @@ For more information about Voxtelesys's OAuth2, refer to the [official documenta
 - Developed and tested against n8n 2.x (2.37.10). Earlier versions are untested and unsupported.
 
 This node is built using n8n's programmatic-style node architecture and follows the latest n8n development best practices.
+
+## Usage
+
+### Send an SMS
+
+Add the **Voxtelesys** node, select the **Message** resource and the **Send** operation, then fill in:
+
+| Field | Example |
+| --- | --- |
+| **From** | `+13003003000` |
+| **To** | `+13003003001` |
+| **Message** | `Your order has shipped.` |
+
+**From** and **To** take [E.164](https://en.wikipedia.org/wiki/E.164) numbers — a plus sign, country code, then subscriber number, with no spaces, dashes or parentheses. Loosely formatted numbers such as `(300) 555-0100` are accepted as long as **Normalize Numbers to E.164** is left enabled under **Options**.
+
+To send to a number from an earlier node, put an expression in **To**:
+
+```
+{{ $json.phoneNumber }}
+```
+
+### Send an MMS
+
+An MMS is a send that carries media. Under **Options**, add **Media URLs** and enter one publicly reachable URL per entry:
+
+```
+https://example.com/receipt.png
+```
+
+**Message** is still required — an MMS with media but no body is rejected. Use one entry per URL; an expression returning an array of URLs is not accepted, but an expression resolving to a single URL is:
+
+```
+{{ $json.imageUrl }}
+```
+
+### Correlate delivery reports
+
+**Tag** and **Bulk Tag** (under **Options**, max 256 characters each) are echoed back in callback events — use them to carry your own identifier for a message or a batch:
+
+```
+{{ $json.orderId }}
+```
+
+### Wait for a final delivery status
+
+Set **Status Callback URL** under **Options** to `{{ $execution.resumeUrl }}` and follow the node with a **Wait** node set to resume on webhook call. Voxtelesys posts intermediate statuses (`queued`, `delivering`) as well as final ones (`delivered`, `failed`, `unknown`, `expired`), so branch on the status and loop back to the Wait node for any non-final value.
 
 ## Resources
 
