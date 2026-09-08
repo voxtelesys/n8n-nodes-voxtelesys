@@ -58,7 +58,7 @@ export const messageFields: INodeProperties[] = [
 		default: '',
 		required: true,
 		description:
-			'Message body. Required on every send, including an MMS that also carries media.',
+			'Message body. Required on every send.',
 		displayOptions: showFor(['send']),
 	},
 	{

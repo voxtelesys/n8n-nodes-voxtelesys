@@ -60,6 +60,10 @@ This node is built using n8n's programmatic-style node architecture and follows 
 
 ## Usage
 
+### Prerequisites
+To send SMS and MMS messages, you must have an SMS enabled number.
+See: https://voxtelesys.com/tutorial/the-campaign-registry for more details.
+
 ### Send an SMS
 
 Add the **Voxtelesys** node, select the **Message** resource and the **Send** operation, then fill in:
@@ -102,7 +106,7 @@ https://example.com/receipt.png
 
 ### Wait for a final delivery status
 
-Set **Status Callback URL** under **Options** to `{{ $execution.resumeUrl }}` and follow the node with a **Wait** node set to resume on webhook call. Voxtelesys posts intermediate statuses (`queued`, `delivering`) as well as final ones (`delivered`, `failed`, `unknown`, `expired`), so branch on the status and loop back to the Wait node for any non-final value.
+Set **Status Callback URL** under **Options** to `{{ $execution.resumeUrl }}` and follow the node with a **Wait** node set to resume on webhook call. Voxtelesys posts intermediate statuses (`queued`, `delivering`) as well as final ones (`delivered`, `failed`, `unknown`, `expired`), so branch on the status and loop back to the Wait node for any non-final value. To get Delivery Receipts, you need to set the Status Callback URL or add a messaging application with a callback set to your n8n workflow.
 
 ## Resources
 
