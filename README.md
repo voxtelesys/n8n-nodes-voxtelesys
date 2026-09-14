@@ -1,6 +1,6 @@
 # @voxtelesys/n8n-nodes-voxtelesys
 
-This is an n8n community node. It lets you send SMS, MMS and RCS messages with Voxtelesys in your n8n workflows.
+This is an n8n community node. It lets you send , and RCS messages with Voxtelesys in your n8n workflows.
 
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
