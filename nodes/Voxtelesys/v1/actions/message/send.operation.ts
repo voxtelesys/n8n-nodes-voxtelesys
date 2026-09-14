@@ -3,7 +3,7 @@ import { NodeOperationError } from 'n8n-workflow'
 
 import { voxtelesysApiRequest } from '../../transport'
 import { normalizeAndValidate } from '../../helpers/phoneNumbers'
-import { applyCommonOptions } from '../../helpers/utils'
+import { applyStatusCallback, applyTags, toMediaUrls } from '../../helpers/utils'
 
 /**
  * POST /sms
@@ -53,7 +53,11 @@ export async function send(
 	}
 	body.body = message
 
-	applyCommonOptions.call(this, body, options, itemIndex)
+	const media = toMediaUrls.call(this, options.media, itemIndex)
+	if (media.length) body.media = media
+
+	applyTags.call(this, body, options, itemIndex)
+	applyStatusCallback.call(this, body, options, itemIndex)
 
 	const response = await voxtelesysApiRequest.call(this, 'sms', 'POST', '/sms', body)
 
