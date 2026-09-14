@@ -182,7 +182,7 @@ function buildSuggestion(
 	return suggestion
 }
 
- // Read empty or long values from the text field of a suggestion
+// Read empty or long values from the text field of a suggestion
 function requireString(
 	this: IExecuteFunctions,
 	label: string,
@@ -215,7 +215,7 @@ function withinLength(
 	return value
 }
 
- // Read a required latitude or longitude off of a suggestion and reject values that are not in range
+// Read a required latitude or longitude off of a suggestion and reject values that are not in range
 function requireCoordinate(
 	this: IExecuteFunctions,
 	label: string,
