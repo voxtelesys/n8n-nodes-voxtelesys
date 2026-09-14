@@ -1,6 +1,6 @@
 # @voxtelesys/n8n-nodes-voxtelesys
 
-This is an n8n community node. It lets you send SMS and MMS messages with Voxtelesys in your n8n workflows.
+This is an n8n community node. It lets you send SMS, MMS and RCS messages with Voxtelesys in your n8n workflows.
 
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
@@ -27,9 +27,13 @@ npm install @voxtelesys/n8n-nodes-voxtelesys
 
 This node supports the following resources and operations:
 
-### Messaging
+### Message
 
-- **Send SMS/MMS**: Sends a SMS/MMS message
+- **Send**: Sends an SMS or MMS message
+
+### RCS Message
+
+- **Send**: Sends an RCS message, optionally with suggestion chips and SMS/MMS failover
 
 ## Credentials
 
@@ -64,6 +68,8 @@ This node is built using n8n's programmatic-style node architecture and follows 
 To send SMS and MMS messages, you must have an SMS enabled number.
 See: https://voxtelesys.com/tutorial/the-campaign-registry for more details.
 
+To send RCS messages, you must have a registered RCS agent, whose name is the **From** value on the send. Sending also needs the `rcsapi:rcs:manage` scope on the OAuth client, which is separate from the messaging scopes — a client set up only for SMS will not be able to send RCS.
+
 ### Send an SMS
 
 Add the **Voxtelesys** node, select the **Message** resource and the **Send** operation, then fill in:
@@ -96,9 +102,63 @@ https://example.com/receipt.png
 {{ $json.imageUrl }}
 ```
 
+### Send an RCS message
+
+RCS is a richer channel than SMS: the message can carry tappable suggestion chips and falls back to SMS for recipients whose phone or carrier cannot receive it.
+
+Add the **Voxtelesys** node, select the **RCS Message** resource, and the **Send** operation. Then fill in:
+
+| Field | Example |
+| --- | --- |
+| **From** | `Brand` |
+| **To** | `+13003003001` |
+| **Message** | `Your order has shipped.` |
+
+**From** is the registered sender for your RCS agent, not a phone number — RCS messages are sent as a brand. **To** takes an E.164 number, the same as messaging, and **Normalize Numbers to E.164** under **Options** applies here too.
+
+### Add suggestions
+
+**Suggestions** are the chips shown with the message. Every chip has **Text** (max 25 characters - what the recipient sees) and **Callback Data** (max 2048 characters - data sent back when clicked). The **Type** then decides what tapping it does, and the node only shows the fields that type needs:
+
+| Type | What it does | Extra fields |
+| --- | --- | --- |
+| **Reply** | Sends the chip's text back as a reply | — |
+| **Open URL** | Opens a URL | **URL**, **Application** (`Browser` or `Webview`), **View Mode** when a webview |
+| **Dial Phone** | Opens the dialer with a number | **Phone Number** |
+| **Show Location** | Opens a map at a point | **Latitude**, **Longitude**, **Label** |
+| **Request Location** | Asks the recipient to share their location | — |
+| **Create Calendar Event** | Prefills a new calendar event | **Title**, **Start Time**, **End Time**, **Description** |
+
+A confirmation prompt is two Reply chips:
+
+| Type | Text | Callback Data |
+| --- | --- | --- |
+| Reply | `Confirm` | `confirm-{{ $json.orderId }}` |
+| Reply | `Reschedule` | `reschedule-{{ $json.orderId }}` |
+
+The tapped chip's callback data arrives on the inbound message, so branch on it in the workflow that handles your inbound webhook.
+
+### Fall back to SMS
+
+Not every recipient can receive RCS. Turn on **SMS Failover** and Voxtelesys sends an SMS or MMS message instead when RCS delivery is not possible.
+
+**Failover From** is required and must be an SMS enabled number, because the RCS **From** is an agent rather than a number. Under **Failover Options**:
+
+- **To** defaults to the RCS recipient — set it only to send the fallback somewhere else
+- **Message** defaults to the RCS message body. Override it when the RCS message relies on its suggestions, since an SMS cannot carry them: `Your order has shipped. Reply Y to confirm.`
+- **Media URLs** attaches media, which makes the fallback an MMS message
+
+### Expire a time-sensitive message
+
+**Expire At** under **Options** tells Voxtelesys to give up on a message that has not been sent by that time, rather than delivering it late. Useful for one-time passcodes and appointment reminders:
+
+```
+{{ $now.plus(5, 'minutes') }}
+```
+
 ### Correlate delivery reports
 
-**Tag** and **Bulk Tag** (under **Options**, max 256 characters each) are echoed back in callback events — use them to carry your own identifier for a message or a batch:
+Both resources share these options. **Tag** and **Bulk Tag** (under **Options**, max 256 characters each) are echoed back in callback events — use them to carry your own identifier for a message or a batch:
 
 ```
 {{ $json.orderId }}
@@ -112,6 +172,7 @@ Set **Status Callback URL** under **Options** to `{{ $execution.resumeUrl }}` an
 
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
 - [Voxtelesys Messaging API documentation](https://developer.voxtelesys.com/apis/message/)
+- [Voxtelesys RCS API documentation](https://developer.voxtelesys.com/apis/rcs/)
 - [Voxtelesys Portal](https://portal.voxtelesys.net)
 
 ## Version history
