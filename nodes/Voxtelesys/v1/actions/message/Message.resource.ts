@@ -116,9 +116,9 @@ export const messageFields: INodeProperties[] = [
 				name: 'statusCallbackUrl',
 				type: 'string',
 				default: '',
-				placeholder: '{{ $execution.resumeUrl }}',
+				placeholder: 'https://example.com/status-callback',
 				description:
-					'The URL to send callbacks to when the status of the message is updated, overriding the Messaging Application DR webhook for this message. Statuses include the intermediate queued and delivering as well as the final delivered, failed, unknown and expired. Pair with {{ $execution.resumeUrl }} and a Wait node, branching on the status and looping back for non-final values.',
+					'The URL to send callbacks to when the status of the message is updated, overriding the Messaging Application DR webhook for this message. Statuses include the intermediate queued and delivering as well as the final delivered, failed, unknown and expired. Pair with the expression {{ $execution.resumeUrl }} and a Wait node, branching on the status and looping back for non-final values. Set the field as an expression so it resolves to a URL, and make sure the URL is reachable from the internet.',
 			},
 			{
 				displayName: 'Tag',
