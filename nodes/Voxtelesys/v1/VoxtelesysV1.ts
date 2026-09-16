@@ -9,6 +9,8 @@ import type {
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow'
 import { messageFields, messageOperations } from './actions/message/Message.resource'
 import { send as sendMessage } from './actions/message/send.operation'
+import { flowFields, flowOperations } from './actions/flow/Flow.resource'
+import { execute as executeFlow } from './actions/flow/execute.operation'
 
 export class VoxtelesysV1 implements INodeType {
 	description: INodeTypeDescription
@@ -42,11 +44,16 @@ export class VoxtelesysV1 implements INodeType {
 					name: 'resource',
 					type: 'options',
 					noDataExpression: true,
-					options: [{ name: 'Message', value: 'message' }],
+					options: [
+						{ name: 'Flow', value: 'flow' },
+						{ name: 'Message', value: 'message' },
+					],
 					default: 'message',
 				},
 				...messageOperations,
 				...messageFields,
+				...flowOperations,
+				...flowFields,
 			],
 		}
 	}
@@ -63,6 +70,8 @@ export class VoxtelesysV1 implements INodeType {
 
 				if (resource === 'message' && operation === 'send') {
 					results = await sendMessage.call(this, i)
+				} else if (resource === 'flow' && operation === 'execute') {
+					results = await executeFlow.call(this, i)
 				} else {
 					throw new NodeOperationError(
 						this.getNode(),
