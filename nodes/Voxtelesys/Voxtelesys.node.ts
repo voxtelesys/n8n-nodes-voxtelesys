@@ -15,7 +15,7 @@ export class Voxtelesys extends VersionedNodeType {
 			},
 			group: ['output'],
 			subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-			description: 'Send SMS and MMS via Voxtelesys',
+			description: 'Send SMS and MMS messages and place calls via Voxtelesys',
 			defaultVersion: 1,
 		}
 
