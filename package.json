@@ -1,14 +1,16 @@
 {
   "name": "@voxtelesys/n8n-nodes-voxtelesys",
   "version": "0.1.1",
-  "description": "n8n community node for the Voxtelesys Messaging API",
+  "description": "n8n community node for the Voxtelesys Messaging and Voice APIs",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
     "voxtelesys",
     "sms",
     "mms",
-    "messaging"
+    "messaging",
+    "voice",
+    "voip"
   ],
   "license": "MIT",
   "homepage": "https://github.com/voxtelesys/n8n-nodes-voxtelesys#readme",
