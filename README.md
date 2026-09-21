@@ -33,7 +33,7 @@ This node supports the following resources and operations:
 
 ### RCS Message
 
-- **Send**: Sends an RCS message, optionally with suggestion chips and SMS/MMS failover
+- **Send**: Sends an RCS message as text, a file, a card or a carousel, optionally with suggestion chips and SMS/MMS failover
 
 ## Credentials
 
@@ -104,7 +104,7 @@ https://example.com/receipt.png
 
 ### Send an RCS message
 
-RCS is a richer channel than SMS: the message can carry tappable suggestion chips and falls back to SMS for recipients whose phone or carrier cannot receive it.
+RCS is a richer channel than SMS: the message can carry media, rich cards and tappable suggestion chips, and falls back to SMS for recipients whose phone or carrier cannot receive it.
 
 Add the **Voxtelesys** node, select the **RCS Message** resource, and the **Send** operation. Then fill in:
 
@@ -112,13 +112,40 @@ Add the **Voxtelesys** node, select the **RCS Message** resource, and the **Send
 | --- | --- |
 | **From** | `Brand` |
 | **To** | `+13003003001` |
+| **Content Type** | `Text` |
 | **Message** | `Your order has shipped.` |
 
 **From** is the registered sender for your RCS agent, not a phone number — RCS messages are sent as a brand. **To** takes an E.164 number, the same as messaging, and **Normalize Numbers to E.164** under **Options** applies here too.
 
+### Choose a content type
+
+**Content Type** decides what the message carries, and the node shows only the fields that type needs. **Suggestions**, **SMS Failover** and **Options** apply to all four.
+
+| Content Type | Carries | Fields |
+| --- | --- | --- |
+| **Text** | A plain text message | **Message** (max 1600 characters) |
+| **File** | An image, video, audio file or PDF on its own | **File URL** (max 15 MB), **Thumbnail URL** (max 100 KB) |
+| **Card** | One rich card | **Orientation**, **Alignment**, and the **Card** itself |
+| **Carousel** | Between 2 and 10 rich cards the recipient scrolls through | **Card Width**, and the **Cards** |
+
+A card, whether on its own or in a carousel, takes:
+
+| Field | Notes |
+| --- | --- |
+| **Title** | Max 200 characters |
+| **Description** | Max 1600 characters |
+| **Media URL** | Image or video, max 15 MB |
+| **Media Height** | `Short`, `Medium` or `Tall`, once a media URL is set |
+| **Media Thumbnail URL** | Max 100 KB, once a media URL is set |
+| **Suggestions** | Up to 4, shown on the card rather than under the message |
+
+A card is only rendered when it has a **Title**, a **Media URL**, or both — a description on its own is not enough, and the node rejects the send rather than letting the API drop the card.
+
+For a single card, **Orientation** places the media beside the text (`Horizontal`) or above it (`Vertical`), and **Alignment** puts the content on the `Left` or the `Right`. A carousel instead sets **Card Width** once for every card in it.
+
 ### Add suggestions
 
-**Suggestions** are the chips shown with the message. Every chip has **Text** (max 25 characters - what the recipient sees) and **Callback Data** (max 2048 characters - data sent back when clicked). The **Type** then decides what tapping it does, and the node only shows the fields that type needs:
+**Suggestions** are the chips shown with the message, up to 11 of them. A card carries its own list too, up to 4 per card, shown on the card rather than under the message. Every chip has **Text** (max 25 characters - what the recipient sees) and **Callback Data** (max 2048 characters - data sent back when clicked). The **Type** then decides what tapping it does, and the node only shows the fields that type needs:
 
 | Type | What it does | Extra fields |
 | --- | --- | --- |
@@ -145,7 +172,7 @@ Not every recipient can receive RCS. Turn on **SMS Failover** and Voxtelesys sen
 **Failover From** is required and must be an SMS enabled number, because the RCS **From** is an agent rather than a number. Under **Failover Options**:
 
 - **To** defaults to the RCS recipient — set it only to send the fallback somewhere else
-- **Message** defaults to the RCS message body. Override it when the RCS message relies on its suggestions, since an SMS cannot carry them: `Your order has shipped. Reply Y to confirm.`
+- **Message** defaults to the RCS message body, and is required for a file, card or carousel, since none of those have a body to fall back on. Override it when the RCS message relies on its suggestions, since an SMS cannot carry them: `Your order has shipped. Reply Y to confirm.`
 - **Media URLs** attaches media, which makes the fallback an MMS message
 
 ### Expire a time-sensitive message
