@@ -3,7 +3,17 @@
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Communication"],
-	"alias": ["SMS", "MMS", "Text", "Text Message", "Messaging", "Voxtelesys"],
+	"alias": [
+		"SMS",
+		"MMS",
+		"Text",
+		"Text Message",
+		"Messaging",
+		"Voice",
+		"Call",
+		"VoXML",
+		"Voxtelesys"
+	],
 	"resources": {
 		"credentialDocumentation": [
 			{
@@ -13,6 +23,9 @@
 		"primaryDocumentation": [
 			{
 				"url": "https://developer.voxtelesys.com/apis/message"
+			},
+			{
+				"url": "https://developer.voxtelesys.com/apis/voice"
 			}
 		]
 	}

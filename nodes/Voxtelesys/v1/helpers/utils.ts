@@ -1,7 +1,7 @@
 import type { IDataObject, IExecuteFunctions } from 'n8n-workflow'
 import { NodeOperationError } from 'n8n-workflow'
 
-import { MAX_TAG_LENGTH } from './constants'
+import { MAX_TAG_LENGTH, type NumericField } from './constants'
 
 // Both tags are length-capped strings
 const TAG_FIELDS = [
@@ -26,6 +26,24 @@ export function applyCommonOptions(
 	const media = toMediaUrls.call(this, options.media, itemIndex)
 	if (media.length) body.media = media
 
+	applyTags.call(this, body, options, itemIndex)
+	applyStatusCallback(body, options)
+}
+
+/**
+ * Copy the Tag and Bulk Tag options onto the request body, rejecting over-long values.
+ *
+ * @param body - Request body that is mutated in place
+ * @param options - Options collection values
+ * @param itemIndex - Index of the item being processed, used in error messages
+ * @throws {NodeOperationError} When a tag exceeds the maximum length
+ */
+export function applyTags(
+	this: IExecuteFunctions,
+	body: IDataObject,
+	options: IDataObject,
+	itemIndex: number,
+): void {
 	for (const { optionName, displayName, bodyField } of TAG_FIELDS) {
 		const value = options[optionName] as string | undefined
 		if (!value) continue
@@ -38,12 +56,65 @@ export function applyCommonOptions(
 		}
 		body[bodyField] = value
 	}
+}
 
-	if (options.statusCallbackUrl) {
-		body.status_callback = {
-			url: options.statusCallbackUrl as string,
-			method: (options.statusCallbackMethod as string) || 'POST',
+/**
+ * Build the `status_callback` object from the callback options. Nothing is set without a URL.
+ *
+ * @param body - Request body that is mutated in place
+ * @param options - Options collection values
+ * @param events - Statuses to request callbacks for, supported by the Voice API only
+ */
+export function applyStatusCallback(
+	body: IDataObject,
+	options: IDataObject,
+	events?: string[],
+): void {
+	if (!options.statusCallbackUrl) return
+
+	const statusCallback: IDataObject = {
+		url: options.statusCallbackUrl as string,
+		method: (options.statusCallbackMethod as string) || 'POST',
+	}
+	if (events?.length) statusCallback.events = events
+
+	body.status_callback = statusCallback
+}
+
+/**
+ * Copy numeric options onto the request body, rejecting values outside the range the API accepts.
+ *
+ * @param body - Request body that is mutated in place
+ * @param options - Options collection values
+ * @param fields - Numeric options to apply, with their accepted ranges
+ * @param itemIndex - Index of the item being processed, used in error messages
+ * @throws {NodeOperationError} When a value is not a number or falls outside its range
+ */
+export function applyNumericOptions(
+	this: IExecuteFunctions,
+	body: IDataObject,
+	options: IDataObject,
+	fields: NumericField[],
+	itemIndex: number,
+): void {
+	for (const { optionName, displayName, bodyField, min, max } of fields) {
+		const raw = options[optionName]
+		if (raw === undefined || raw === null || raw === '') continue
+
+		// Expressions can resolve to a numeric string, so accept anything Number() understands
+		const value = Number(raw)
+		if (!Number.isFinite(value)) {
+			throw new NodeOperationError(this.getNode(), `${displayName} must be a number`, { itemIndex })
 		}
+		if (value < min || value > max) {
+			throw new NodeOperationError(
+				this.getNode(),
+				`${displayName} must be between ${min} and ${max}, but is ${value}`,
+				{ itemIndex },
+			)
+		}
+
+		body[bodyField] = Math.round(value)
 	}
 }
 

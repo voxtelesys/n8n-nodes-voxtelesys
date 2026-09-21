@@ -7,6 +7,8 @@ import type {
 	JsonObject,
 } from 'n8n-workflow'
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow'
+import { callFields, callOperations } from './actions/call/Call.resource'
+import { create as createCall } from './actions/call/create.operation'
 import { messageFields, messageOperations } from './actions/message/Message.resource'
 import { send as sendMessage } from './actions/message/send.operation'
 
@@ -42,9 +44,15 @@ export class VoxtelesysV1 implements INodeType {
 					name: 'resource',
 					type: 'options',
 					noDataExpression: true,
-					options: [{ name: 'Message', value: 'message' }],
+					// Resource options must be ordered alphabetically by name
+					options: [
+						{ name: 'Call', value: 'call' },
+						{ name: 'Message', value: 'message' },
+					],
 					default: 'message',
 				},
+				...callOperations,
+				...callFields,
 				...messageOperations,
 				...messageFields,
 			],
@@ -63,6 +71,8 @@ export class VoxtelesysV1 implements INodeType {
 
 				if (resource === 'message' && operation === 'send') {
 					results = await sendMessage.call(this, i)
+				} else if (resource === 'call' && operation === 'create') {
+					results = await createCall.call(this, i)
 				} else {
 					throw new NodeOperationError(
 						this.getNode(),
