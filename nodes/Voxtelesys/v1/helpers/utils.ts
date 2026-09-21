@@ -177,3 +177,78 @@ export function toIsoTimestamp(
 
 	return parsed.toISOString()
 }
+
+/**
+ * Ensure text exists and reject values over the API limit.
+ *
+ * @param label - Field name used in error messages
+ * @param value - Raw field value
+ * @param maxLength - Maximum length the API accepts, or undefined when it is not capped
+ * @param itemIndex - Index of the item being processed, used in error messages
+ * @returns The value trimmed
+ * @throws {NodeOperationError} When the value is empty or too long
+ */
+export function requireString(
+	this: IExecuteFunctions,
+	label: string,
+	value: unknown,
+	maxLength: number | undefined,
+	itemIndex: number,
+): string {
+	const text = typeof value === 'string' ? value.trim() : ''
+	if (!text) {
+		throw new NodeOperationError(this.getNode(), `${label} is required`, { itemIndex })
+	}
+
+	return maxLength === undefined ? text : withinLength.call(this, label, text, maxLength, itemIndex)
+}
+
+/**
+ * Read optional text field
+ *
+ * @param label - Field name used in error messages
+ * @param value - Raw field value
+ * @param maxLength - Maximum length the API accepts, or undefined when it is not capped
+ * @param itemIndex - Index of the item being processed, used in error messages
+ * @returns The value trimmed, or an empty string when it is unset
+ * @throws {NodeOperationError} When the value is too long
+ */
+export function optionalString(
+	this: IExecuteFunctions,
+	label: string,
+	value: unknown,
+	maxLength: number | undefined,
+	itemIndex: number,
+): string {
+	const text = typeof value === 'string' ? value.trim() : ''
+	if (!text) return ''
+
+	return maxLength === undefined ? text : withinLength.call(this, label, text, maxLength, itemIndex)
+}
+
+/**
+ * Reject a value that is over an API length limit.
+ *
+ * @param label - Field name used in error messages
+ * @param value - Value to check
+ * @param maxLength - Maximum length the API accepts
+ * @param itemIndex - Index of the item being processed, used in error messages
+ * @returns The value unchanged
+ * @throws {NodeOperationError} When the value is too long
+ */
+export function withinLength(
+	this: IExecuteFunctions,
+	label: string,
+	value: string,
+	maxLength: number,
+	itemIndex: number,
+): string {
+	if (value.length > maxLength) {
+		throw new NodeOperationError(
+			this.getNode(),
+			`${label} must be ${maxLength} characters or fewer`,
+			{ itemIndex },
+		)
+	}
+	return value
+}

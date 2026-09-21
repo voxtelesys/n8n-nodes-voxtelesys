@@ -2,9 +2,16 @@ import type { IDataObject, IExecuteFunctions, INodeExecutionData } from 'n8n-wor
 import { NodeOperationError } from 'n8n-workflow'
 
 import { voxtelesysApiRequest } from '../../transport'
+import { MAX_MESSAGE_BODY_LENGTH } from '../../helpers/constants'
+import { toContent, type ContentType } from '../../helpers/content'
 import { normalizeAndValidate } from '../../helpers/phoneNumbers'
-import { toSuggestions } from '../../helpers/suggestions'
-import { applyStatusCallback, applyTags, toIsoTimestamp, toMediaUrls } from '../../helpers/utils'
+import {
+	applyStatusCallback,
+	applyTags,
+	requireString,
+	toIsoTimestamp,
+	toMediaUrls,
+} from '../../helpers/utils'
 
 /**
  * POST /rcs
@@ -13,6 +20,7 @@ import { applyStatusCallback, applyTags, toIsoTimestamp, toMediaUrls } from '../
  *   "to": "+13003003001",
  *   "from": "Brand",
  *   "content": {
+ *     "type": "TEXT",
  *     "body": "Hello world",
  *     "suggestions": [{ "type": "REPLY", "text": "Yes", "callback_data": "yes" }]
  *   },
@@ -54,25 +62,8 @@ export async function send(
 		{ normalize, itemIndex },
 	)
 
-	// Message is required on every request
-	const message = this.getNodeParameter('body', itemIndex, '') as string
-	if (!message.trim()) {
-		throw new NodeOperationError(this.getNode(), 'Message is required', {
-			itemIndex,
-			description:
-				'Every send needs a message body. Suggestions are shown alongside the body, not in place of it.',
-		})
-	}
-
-	const content: IDataObject = { body: message }
-
-	const suggestions = toSuggestions.call(
-		this,
-		this.getNodeParameter('suggestions', itemIndex, {}),
-		normalize,
-		itemIndex,
-	)
-	if (suggestions.length) content.suggestions = suggestions
+	const contentType = this.getNodeParameter('contentType', itemIndex, 'TEXT') as ContentType
+	const content = toContent.call(this, contentType, normalize, itemIndex)
 
 	const body: IDataObject = { from, to, content }
 
@@ -81,6 +72,8 @@ export async function send(
 	}
 
 	if (this.getNodeParameter('failover', itemIndex, false) as boolean) {
+		// Only a text message has a body the failover can reuse
+		const message = contentType === 'TEXT' ? ((content.body as string) ?? '') : ''
 		body.failover = buildFailover.call(this, { to, message, normalize }, itemIndex)
 	}
 
@@ -101,11 +94,11 @@ export async function send(
  * Builds the failover to SMS/MMS if the RCS message fails
  *
  * @param rcs.to - Recipient of the RCS message
- * @param rcs.message - Body of the RCS message
+ * @param rcs.message - Body of the RCS message, which is empty for content that has no body
  * @param rcs.normalize - Whether to convert loosely formatted numbers to E.164
  * @param itemIndex - Index of the item being processed, used in error messages
  * @returns The failover object in the shape the API expects
- * @throws {NodeOperationError} When the failover sender is missing or a number is invalid
+ * @throws {NodeOperationError} When the failover sender or message is missing, or a number is invalid
  */
 function buildFailover(
 	this: IExecuteFunctions,
@@ -137,12 +130,25 @@ function buildFailover(
 		: rcs.to
 
 	const overrideBody = ((options.body as string) ?? '').trim()
+	if (!overrideBody && !rcs.message) {
+		throw new NodeOperationError(this.getNode(), 'Failover Message is required', {
+			itemIndex,
+			description:
+				'An SMS or MMS message always needs a body, and only a text RCS message has one to fall back on. Set Message under Failover Options, and attach any images there as media URLs.',
+		})
+	}
 
 	const failover: IDataObject = {
 		enabled: true,
 		from,
 		to,
-		body: overrideBody || rcs.message,
+		body: requireString.call(
+			this,
+			'Failover Message',
+			overrideBody || rcs.message,
+			MAX_MESSAGE_BODY_LENGTH,
+			itemIndex,
+		),
 	}
 
 	const media = toMediaUrls.call(this, options.media, itemIndex)

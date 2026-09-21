@@ -7,9 +7,22 @@ const showFor = (operation: string[]) => ({
 	},
 })
 
+const showForContentType = (contentType: string[]) => ({
+	show: {
+		resource: ['rcs'],
+		operation: ['send'],
+		contentType,
+	},
+})
+
 const showForSuggestionType = (type: string[]) => ({
 	show: { type },
 })
+
+// Media on a card is optional, and the rest of the media fields only matter once a URL is set
+const showWhenMediaSet = {
+	show: { mediaUrl: [{ _cnd: { not: '' } }] },
+}
 
 export const rcsOperations: INodeProperties[] = [
 	{
@@ -194,6 +207,82 @@ const suggestionFields: INodeProperties[] = [
 	},
 ]
 
+// Suggestion chips
+const suggestionsField = {
+	displayName: 'Suggestions',
+	name: 'suggestions',
+	type: 'fixedCollection',
+	typeOptions: { multipleValues: true, multipleValueButtonText: 'Add suggestion' },
+	placeholder: 'Add suggestion',
+	default: {},
+	options: [
+		{
+			displayName: 'Suggestion',
+			name: 'suggestion',
+			values: suggestionFields,
+		},
+	],
+} satisfies INodeProperties
+
+// Contents of one card used by both the Card and Carousel
+const cardFields: INodeProperties[] = [
+	{
+		displayName: 'Title',
+		name: 'title',
+		type: 'string',
+		default: '',
+		placeholder: 'Card Title',
+		description:
+			'Title of the card (max 200 characters). A card needs a title, media, or both, to be shown.',
+	},
+	{
+		displayName: 'Description',
+		name: 'description',
+		type: 'string',
+		typeOptions: { rows: 3 },
+		default: '',
+		description:
+			'Description shown under the title (max 1600 characters). A description on its own is not enough to render a card.',
+	},
+	{
+		displayName: 'Media URL',
+		name: 'mediaUrl',
+		type: 'string',
+		default: '',
+		placeholder: 'https://example.com/media.jpg',
+		description:
+			'Publicly reachable URL of an image or video to show on the card, up to 15 MB. A card needs a title, media, or both, to be shown.',
+	},
+	{
+		displayName: 'Media Height',
+		name: 'mediaHeight',
+		type: 'options',
+		options: [
+			{ name: 'Medium', value: 'MEDIUM' },
+			{ name: 'Short', value: 'SHORT' },
+			{ name: 'Tall', value: 'TALL' },
+		],
+		default: 'MEDIUM',
+		description: 'How much of the card the media takes up',
+		displayOptions: showWhenMediaSet,
+	},
+	{
+		displayName: 'Media Thumbnail URL',
+		name: 'mediaThumbnailUrl',
+		type: 'string',
+		default: '',
+		placeholder: 'https://example.com/thumb.jpg',
+		description:
+			'Publicly reachable URL of a thumbnail to show while the media loads, up to 100 KB. JPEG or PNG only.',
+		displayOptions: showWhenMediaSet,
+	},
+	{
+		...suggestionsField,
+		description:
+			'Tappable chips shown on this card rather than under the message, up to 4. Each one either replies, opens something on the phone, or asks the recipient for their location.',
+	},
+]
+
 export const rcsFields: INodeProperties[] = [
 	// POST /rcs
 	{
@@ -218,32 +307,141 @@ export const rcsFields: INodeProperties[] = [
 		displayOptions: showFor(['send']),
 	},
 	{
+		displayName: 'Content Type',
+		name: 'contentType',
+		type: 'options',
+		options: [
+			{
+				name: 'Card',
+				value: 'CARD',
+				description: 'A single rich card with a title, description and media',
+			},
+			{
+				name: 'Carousel',
+				value: 'CAROUSEL',
+				description: 'Between 2 and 10 rich cards the recipient scrolls through',
+			},
+			{
+				name: 'File',
+				value: 'FILE',
+				description: 'An image, video, audio file or PDF sent on its own',
+			},
+			{ name: 'Text', value: 'TEXT', description: 'A plain text message' },
+		],
+		default: 'TEXT',
+		description: 'What the message carries. Suggestions can be attached to any of them.',
+		displayOptions: showFor(['send']),
+	},
+	// TEXT
+	{
 		displayName: 'Message',
 		name: 'body',
 		type: 'string',
 		typeOptions: { rows: 4 },
 		default: '',
 		required: true,
-		description: 'Message body. Required on every send.',
-		displayOptions: showFor(['send']),
+		description: 'Message body (max 1600 characters)',
+		displayOptions: showForContentType(['TEXT']),
+	},
+	// FILE
+	{
+		displayName: 'File URL',
+		name: 'fileUrl',
+		type: 'string',
+		default: '',
+		required: true,
+		placeholder: 'https://example.com/media.jpg',
+		description:
+			'Publicly reachable URL of the file to send, up to 15 MB. Images, video, audio and PDFs are accepted.',
+		displayOptions: showForContentType(['FILE']),
 	},
 	{
-		displayName: 'Suggestions',
-		name: 'suggestions',
-		type: 'fixedCollection',
-		typeOptions: { multipleValues: true, multipleValueButtonText: 'Add suggestion' },
-		placeholder: 'Add suggestion',
-		default: {},
+		displayName: 'Thumbnail URL',
+		name: 'thumbnailUrl',
+		type: 'string',
+		default: '',
+		placeholder: 'https://example.com/thumb.jpg',
 		description:
-			'Tappable chips shown with the message, up to 11. Each one either replies, opens something on the phone, or asks the recipient for their location.',
-		displayOptions: showFor(['send']),
+			'Publicly reachable URL of a thumbnail to show while the file loads, up to 100 KB. JPEG or PNG only.',
+		displayOptions: showForContentType(['FILE']),
+	},
+	// CARD
+	{
+		displayName: 'Orientation',
+		name: 'orientation',
+		type: 'options',
+		options: [
+			{ name: 'Horizontal', value: 'HORIZONTAL', description: 'Media beside the text' },
+			{ name: 'Vertical', value: 'VERTICAL', description: 'Media above the text' },
+		],
+		default: 'VERTICAL',
+		description: 'How the card lays out its media against its text',
+		displayOptions: showForContentType(['CARD']),
+	},
+	{
+		displayName: 'Alignment',
+		name: 'alignment',
+		type: 'options',
+		options: [
+			{ name: 'Left', value: 'LEFT' },
+			{ name: 'Right', value: 'RIGHT' },
+		],
+		default: 'LEFT',
+		description: 'Which side of the card its content sits on',
+		displayOptions: showForContentType(['CARD']),
+	},
+	{
+		displayName: 'Card',
+		name: 'card',
+		type: 'fixedCollection',
+		placeholder: 'Add card',
+		default: {},
+		description: 'Contents of the card',
+		displayOptions: showForContentType(['CARD']),
 		options: [
 			{
-				displayName: 'Suggestion',
-				name: 'suggestion',
-				values: suggestionFields,
+				displayName: 'Card',
+				name: 'card',
+				values: cardFields,
 			},
 		],
+	},
+	// CAROUSEL
+	{
+		displayName: 'Card Width',
+		name: 'cardWidth',
+		type: 'options',
+		options: [
+			{ name: 'Medium', value: 'MEDIUM' },
+			{ name: 'Small', value: 'SMALL' },
+		],
+		default: 'MEDIUM',
+		description: 'Width every card in the carousel is shown at',
+		displayOptions: showForContentType(['CAROUSEL']),
+	},
+	{
+		displayName: 'Cards',
+		name: 'cards',
+		type: 'fixedCollection',
+		typeOptions: { multipleValues: true, multipleValueButtonText: 'Add card' },
+		placeholder: 'Add card',
+		default: {},
+		description:
+			'Cards in the carousel, between 2 and 10. Each one needs a title, media, or both, to be shown.',
+		displayOptions: showForContentType(['CAROUSEL']),
+		options: [
+			{
+				displayName: 'Card',
+				name: 'card',
+				values: cardFields,
+			},
+		],
+	},
+	{
+		...suggestionsField,
+		description:
+			'Tappable chips shown under the message, up to 11, whichever content type it carries. Each one either replies, opens something on the phone, or asks the recipient for their location.',
+		displayOptions: showFor(['send']),
 	},
 	{
 		displayName: 'SMS Failover',
@@ -291,7 +489,7 @@ export const rcsFields: INodeProperties[] = [
 				typeOptions: { rows: 4 },
 				default: '',
 				description:
-					'Message body for the failover message. Defaults to the RCS message body, which is worth overriding when the RCS message relies on suggestions the SMS cannot carry.',
+					'Message body for the failover message (max 1600 characters). Defaults to the RCS message body, and is required for content that has no body of its own, such as a file, a card or a carousel.',
 			},
 			{
 				displayName: 'To',
