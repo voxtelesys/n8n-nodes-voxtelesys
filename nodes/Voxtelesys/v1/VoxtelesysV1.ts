@@ -11,6 +11,7 @@ import { messageFields, messageOperations } from './actions/message/Message.reso
 import { send as sendMessage } from './actions/message/send.operation'
 import { rcsFields, rcsOperations } from './actions/rcs/Rcs.resource'
 import { send as sendRcs } from './actions/rcs/send.operation'
+import { nodeHints } from './helpers/hints'
 
 export class VoxtelesysV1 implements INodeType {
 	description: INodeTypeDescription
@@ -23,6 +24,7 @@ export class VoxtelesysV1 implements INodeType {
 			inputs: [NodeConnectionTypes.Main],
 			outputs: [NodeConnectionTypes.Main],
 			usableAsTool: true,
+			hints: nodeHints,
 			credentials: [
 				{
 					name: 'voxtelesysOAuth2Api',
@@ -75,7 +77,7 @@ export class VoxtelesysV1 implements INodeType {
 				} else {
 					throw new NodeOperationError(
 						this.getNode(),
-						`The operation "${operation}" is not yet implemented for resource "${resource}"`,
+						`The operation '${operation}' is not yet implemented for resource '${resource}'`,
 						{ itemIndex: i },
 					)
 				}
