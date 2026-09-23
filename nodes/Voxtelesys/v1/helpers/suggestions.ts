@@ -182,7 +182,7 @@ function buildSuggestion(
 		}
 
 		default:
-			throw new NodeOperationError(this.getNode(), `${label} has an unknown type: "${type}"`, {
+			throw new NodeOperationError(this.getNode(), `${label} has an unknown type: '${type}'`, {
 				itemIndex,
 			})
 	}

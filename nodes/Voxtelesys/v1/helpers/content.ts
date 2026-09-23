@@ -107,7 +107,7 @@ export function toContent(
 		default:
 			throw new NodeOperationError(
 				this.getNode(),
-				`Content Type has an unknown value: "${contentType}"`,
+				`Content Type has an unknown value: '${contentType}'`,
 				{ itemIndex },
 			)
 	}
