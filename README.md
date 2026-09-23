@@ -1,7 +1,6 @@
 # @voxtelesys/n8n-nodes-voxtelesys
 
-This is an n8n community node. It lets you send , and RCS messages with Voxtelesys in your n8n workflows.
-
+This is an n8n community node. It lets you send SMS, MMS, and RCS messages with Voxtelesys in your n8n workflows.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -27,11 +26,11 @@ npm install @voxtelesys/n8n-nodes-voxtelesys
 
 This node supports the following resources and operations:
 
-### Message
+### SMS/MMS Messaging
 
 - **Send**: Sends an SMS or MMS message
 
-### RCS Message
+### RCS Messaging
 
 - **Send**: Sends an RCS message as text, a file, a card or a carousel, optionally with suggestion chips and SMS/MMS failover
 
@@ -65,6 +64,7 @@ This node is built using n8n's programmatic-style node architecture and follows 
 ## Usage
 
 ### Prerequisites
+
 To send SMS and MMS messages, you must have an SMS enabled number.
 See: https://voxtelesys.com/tutorial/the-campaign-registry for more details.
 
@@ -74,10 +74,10 @@ To send RCS messages, you must have a registered RCS agent, whose name is the **
 
 Add the **Voxtelesys** node, select the **Message** resource and the **Send** operation, then fill in:
 
-| Field | Example |
-| --- | --- |
-| **From** | `+13003003000` |
-| **To** | `+13003003001` |
+| Field       | Example                   |
+| ----------- | ------------------------- |
+| **From**    | `+13003003000`            |
+| **To**      | `+13003003001`            |
 | **Message** | `Your order has shipped.` |
 
 **From** and **To** take [E.164](https://en.wikipedia.org/wiki/E.164) numbers — a plus sign, country code, then subscriber number, with no spaces, dashes or parentheses. Loosely formatted numbers such as `(300) 555-0100` are accepted as long as **Normalize Numbers to E.164** is left enabled under **Options**.
@@ -108,12 +108,12 @@ RCS is a richer channel than SMS: the message can carry media, rich cards and ta
 
 Add the **Voxtelesys** node, select the **RCS Message** resource, and the **Send** operation. Then fill in:
 
-| Field | Example |
-| --- | --- |
-| **From** | `Brand` |
-| **To** | `+13003003001` |
-| **Content Type** | `Text` |
-| **Message** | `Your order has shipped.` |
+| Field            | Example                   |
+| ---------------- | ------------------------- |
+| **From**         | `Brand`                   |
+| **To**           | `+13003003001`            |
+| **Content Type** | `Text`                    |
+| **Message**      | `Your order has shipped.` |
 
 **From** is the registered sender for your RCS agent, not a phone number — RCS messages are sent as a brand. **To** takes an E.164 number, the same as messaging, and **Normalize Numbers to E.164** under **Options** applies here too.
 
@@ -121,23 +121,23 @@ Add the **Voxtelesys** node, select the **RCS Message** resource, and the **Send
 
 **Content Type** decides what the message carries, and the node shows only the fields that type needs. **Suggestions**, **SMS Failover** and **Options** apply to all four.
 
-| Content Type | Carries | Fields |
-| --- | --- | --- |
-| **Text** | A plain text message | **Message** (max 1600 characters) |
-| **File** | An image, video, audio file or PDF on its own | **File URL** (max 15 MB), **Thumbnail URL** (max 100 KB) |
-| **Card** | One rich card | **Orientation**, **Alignment**, and the **Card** itself |
-| **Carousel** | Between 2 and 10 rich cards the recipient scrolls through | **Card Width**, and the **Cards** |
+| Content Type | Carries                                                   | Fields                                                   |
+| ------------ | --------------------------------------------------------- | -------------------------------------------------------- |
+| **Text**     | A plain text message                                      | **Message** (max 1600 characters)                        |
+| **File**     | An image, video, audio file or PDF on its own             | **File URL** (max 15 MB), **Thumbnail URL** (max 100 KB) |
+| **Card**     | One rich card                                             | **Orientation**, **Alignment**, and the **Card** itself  |
+| **Carousel** | Between 2 and 10 rich cards the recipient scrolls through | **Card Width**, and the **Cards**                        |
 
 A card, whether on its own or in a carousel, takes:
 
-| Field | Notes |
-| --- | --- |
-| **Title** | Max 200 characters |
-| **Description** | Max 1600 characters |
-| **Media URL** | Image or video, max 15 MB |
-| **Media Height** | `Short`, `Medium` or `Tall`, once a media URL is set |
-| **Media Thumbnail URL** | Max 100 KB, once a media URL is set |
-| **Suggestions** | Up to 4, shown on the card rather than under the message |
+| Field                   | Notes                                                    |
+| ----------------------- | -------------------------------------------------------- |
+| **Title**               | Max 200 characters                                       |
+| **Description**         | Max 1600 characters                                      |
+| **Media URL**           | Image or video, max 15 MB                                |
+| **Media Height**        | `Short`, `Medium` or `Tall`, once a media URL is set     |
+| **Media Thumbnail URL** | Max 100 KB, once a media URL is set                      |
+| **Suggestions**         | Up to 4, shown on the card rather than under the message |
 
 A card is only rendered when it has a **Title**, a **Media URL**, or both — a description on its own is not enough, and the node rejects the send rather than letting the API drop the card.
 
@@ -147,23 +147,14 @@ For a single card, **Orientation** places the media beside the text (`Horizontal
 
 **Suggestions** are the chips shown with the message, up to 11 of them. A card carries its own list too, up to 4 per card, shown on the card rather than under the message. Every chip has **Text** (max 25 characters - what the recipient sees) and **Callback Data** (max 2048 characters - data sent back when clicked). The **Type** then decides what tapping it does, and the node only shows the fields that type needs:
 
-| Type | What it does | Extra fields |
-| --- | --- | --- |
-| **Reply** | Sends the chip's text back as a reply | — |
-| **Open URL** | Opens a URL | **URL**, **Application** (`Browser` or `Webview`), **View Mode** when a webview |
-| **Dial Phone** | Opens the dialer with a number | **Phone Number** |
-| **Show Location** | Opens a map at a point | **Latitude**, **Longitude**, **Label** |
-| **Request Location** | Asks the recipient to share their location | — |
-| **Create Calendar Event** | Prefills a new calendar event | **Title**, **Start Time**, **End Time**, **Description** |
-
-A confirmation prompt is two Reply chips:
-
-| Type | Text | Callback Data |
-| --- | --- | --- |
-| Reply | `Confirm` | `confirm-{{ $json.orderId }}` |
-| Reply | `Reschedule` | `reschedule-{{ $json.orderId }}` |
-
-The tapped chip's callback data arrives on the inbound message, so branch on it in the workflow that handles your inbound webhook.
+| Type                      | What it does                               | Extra fields                                                                    |
+| ------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| **Reply**                 | Sends the chip's text back as a reply      | —                                                                               |
+| **Open URL**              | Opens a URL                                | **URL**, **Application** (`Browser` or `Webview`), **View Mode** when a webview |
+| **Dial Phone**            | Opens the dialer with a number             | **Phone Number**                                                                |
+| **Show Location**         | Opens a map at a point                     | **Latitude**, **Longitude**, **Label**                                          |
+| **Request Location**      | Asks the recipient to share their location | —                                                                               |
+| **Create Calendar Event** | Prefills a new calendar event              | **Title**, **Start Time**, **End Time**, **Description**                        |
 
 ### Fall back to SMS
 

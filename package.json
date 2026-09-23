@@ -9,6 +9,7 @@
     "sms",
     "mms",
     "rcs",
+    "rbm",
     "messaging"
   ],
   "license": "MIT",
