@@ -56,7 +56,7 @@ const suggestionFields: INodeProperties[] = [
 				value: 'CREATE_CALENDAR_EVENT',
 				description: 'Open the calendar app with a new event prefilled',
 			},
-			{ name: 'Dial Phone', value: 'DIAL_PHONE', description: 'Open the dialer with a number' },
+			{ name: 'Dial Phone', value: 'DIAL_PHONE', description: 'Open the native phone app with a number' },
 			{ name: 'Open URL', value: 'OPEN_URL', description: 'Open a URL in a browser or webview' },
 			{ name: 'Reply', value: 'REPLY', description: 'Send a text reply back to the sender' },
 			{
@@ -67,7 +67,7 @@ const suggestionFields: INodeProperties[] = [
 			{ name: 'Show Location', value: 'SHOW_LOCATION', description: 'Open a map at a location' },
 		],
 		default: 'REPLY',
-		description: "What tapping the chip does on the recipient's phone",
+		description: "What action is performed when the chip is tapped",
 	},
 	{
 		displayName: 'Text',
@@ -85,7 +85,7 @@ const suggestionFields: INodeProperties[] = [
 		default: '',
 		required: true,
 		description:
-			'Data sent back to you when the chip is tapped (max 2048 characters). Arrives on the inbound message or callback event, so use it to identify which chip was tapped.',
+			'Data sent back to you when the chip is tapped (max 2048 characters). Arrives on the inbound message or callback event, so it can be used to identify which chip was tapped.',
 	},
 	// OPEN_URL
 	{
@@ -269,6 +269,30 @@ const cardFields: INodeProperties[] = [
 		displayOptions: showWhenMediaSet,
 	},
 	{
+		displayName: 'Orientation',
+		name: 'orientation',
+		type: 'options',
+		options: [
+			{ name: 'Horizontal', value: 'HORIZONTAL', description: 'Media beside the text' },
+			{ name: 'Vertical', value: 'VERTICAL', description: 'Media above the text' },
+		],
+		default: 'VERTICAL',
+		description: 'How the card lays out its media against its text',
+		displayOptions: showForContentType(['CARD']),
+	},
+	{
+		displayName: 'Alignment',
+		name: 'alignment',
+		type: 'options',
+		options: [
+			{ name: 'Left', value: 'LEFT' },
+			{ name: 'Right', value: 'RIGHT' },
+		],
+		default: 'LEFT',
+		description: 'Which side of the card its content sits on',
+		displayOptions: showForContentType(['CARD']),
+	},
+	{
 		displayName: 'Media Thumbnail URL',
 		name: 'mediaThumbnailUrl',
 		type: 'string',
@@ -281,7 +305,7 @@ const cardFields: INodeProperties[] = [
 	{
 		...suggestionsField,
 		description:
-			'Tappable chips shown on this card rather than under the message, up to 4. Each one either replies, opens something on the phone, or asks the recipient for their location.',
+			'Tappable chips shown on this card rather than under the message, up to 4. Each one either replies, opens an application on the phone, or asks the recipient for their location.',
 	},
 ]
 
@@ -369,30 +393,6 @@ export const rcsFields: INodeProperties[] = [
 	},
 	// CARD
 	{
-		displayName: 'Orientation',
-		name: 'orientation',
-		type: 'options',
-		options: [
-			{ name: 'Horizontal', value: 'HORIZONTAL', description: 'Media beside the text' },
-			{ name: 'Vertical', value: 'VERTICAL', description: 'Media above the text' },
-		],
-		default: 'VERTICAL',
-		description: 'How the card lays out its media against its text',
-		displayOptions: showForContentType(['CARD']),
-	},
-	{
-		displayName: 'Alignment',
-		name: 'alignment',
-		type: 'options',
-		options: [
-			{ name: 'Left', value: 'LEFT' },
-			{ name: 'Right', value: 'RIGHT' },
-		],
-		default: 'LEFT',
-		description: 'Which side of the card its content sits on',
-		displayOptions: showForContentType(['CARD']),
-	},
-	{
 		displayName: 'Card',
 		name: 'card',
 		type: 'fixedCollection',
@@ -442,7 +442,7 @@ export const rcsFields: INodeProperties[] = [
 	{
 		...suggestionsField,
 		description:
-			'Tappable chips shown under the message, up to 11, whichever content type it carries. Each one either replies, opens something on the phone, or asks the recipient for their location.',
+			'Tappable chips shown under the message, up to 11, whichever content type it carries. Each one either replies, opens application on the phone, or asks the recipient for their location.',
 		displayOptions: showFor(['send']),
 	},
 	{
