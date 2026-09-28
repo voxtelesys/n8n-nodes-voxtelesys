@@ -13,6 +13,19 @@ import { rcsFields, rcsOperations } from './actions/rcs/Rcs.resource'
 import { send as sendRcs } from './actions/rcs/send.operation'
 import { nodeHints } from './helpers/hints'
 
+function unsupportedOperation(
+	context: IExecuteFunctions,
+	resource: string,
+	operation: string,
+	itemIndex: number,
+): NodeOperationError {
+	return new NodeOperationError(
+		context.getNode(),
+		`The operation '${operation}' is not yet implemented for resource '${resource}'`,
+		{ itemIndex },
+	)
+}
+
 export class VoxtelesysV1 implements INodeType {
 	description: INodeTypeDescription
 
@@ -70,16 +83,27 @@ export class VoxtelesysV1 implements INodeType {
 			try {
 				let results: INodeExecutionData[]
 
-				if (resource === 'message' && operation === 'send') {
-					results = await sendMessage.call(this, i)
-				} else if (resource === 'rcs' && operation === 'send') {
-					results = await sendRcs.call(this, i)
-				} else {
-					throw new NodeOperationError(
-						this.getNode(),
-						`The operation '${operation}' is not yet implemented for resource '${resource}'`,
-						{ itemIndex: i },
-					)
+				switch (resource) {
+					case 'message':
+						switch (operation) {
+							case 'send':
+								results = await sendMessage.call(this, i)
+								break
+							default:
+								throw unsupportedOperation(this, resource, operation, i)
+						}
+						break
+					case 'rcs':
+						switch (operation) {
+							case 'send':
+								results = await sendRcs.call(this, i)
+								break
+							default:
+								throw unsupportedOperation(this, resource, operation, i)
+						}
+						break
+					default:
+						throw unsupportedOperation(this, resource, operation, i)
 				}
 
 				returnData.push(...results)
