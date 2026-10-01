@@ -119,7 +119,7 @@ export const flowFields: INodeProperties[] = [
 				],
 				default: 'LIVE',
 				description:
-					'Flow environment to execute, as defined in the portal. Defaults to Live. Cannot be combined with Version GUID.',
+					'Flow environment to execute, as defined in the Voxtelesys Portal. Defaults to Live. Cannot be combined with Version GUID.',
 			},
 			{
 				displayName: 'Normalize Numbers to E.164',

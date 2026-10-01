@@ -72,10 +72,10 @@ See: https://voxtelesys.com/tutorial/the-campaign-registry for more details.
 
 Add the **Voxtelesys** node, select the **Message** resource and the **Send** operation, then fill in:
 
-| Field | Example |
-| --- | --- |
-| **From** | `+13003003000` |
-| **To** | `+13003003001` |
+| Field       | Example                   |
+| ----------- | ------------------------- |
+| **From**    | `+13003003000`            |
+| **To**      | `+13003003001`            |
 | **Message** | `Your order has shipped.` |
 
 **From** and **To** take [E.164](https://en.wikipedia.org/wiki/E.164) numbers — a plus sign, country code, then subscriber number, with no spaces, dashes or parentheses. Loosely formatted numbers such as `(300) 555-0100` are accepted as long as **Normalize Numbers to E.164** is left enabled under **Options**.
@@ -117,13 +117,13 @@ Set **Status Callback URL** under **Options** to `{{ $execution.resumeUrl }}` an
 
 Select the **Call** resource and the **Create** operation, then fill in:
 
-| Field | Example |
-| --- | --- |
-| **From** | `+13003003000` |
-| **To** | `+13003003001` |
-| **Voice Trunk Group ID** | `90001` |
-| **Call Instructions** | `VoXML` |
-| **VoXML** | `<Response><Say voice='Joanna' language='en-US'>Hello!</Say></Response>` |
+| Field                     | Example                                                                  |
+| ------------------------- | ------------------------------------------------------------------------ |
+| **From**                  | `+13003003000`                                                           |
+| **To**                    | `+13003003001`                                                           |
+| **Voice Trunk Group ID**  | `90001`                                                                  |
+| **Call Instructions**     | `VoXML`                                                                  |
+| **VoXML**                 | `<Response><Say voice='Joanna' language='en-US'>Hello!</Say></Response>` |
 
 **Voice Trunk Group ID** is the outbound trunk group the call leaves on, found in the Voxtelesys Portal. **From** and **To** follow the same E.164 rules as a message, including **Normalize Numbers to E.164** under **Options**.
 
@@ -131,7 +131,7 @@ Select the **Call** resource and the **Create** operation, then fill in:
 
 - **VoXML** — the VoXML entered on the node
 - **VoXML URL** — an absolute URL the VoXML is fetched from, with **VoXML URL Method** choosing `GET` or `POST`
-- **Flow** — the GUID of a Flow built in the Portal, starting at the **Outbound Call** action on its start widget
+- **Flow** — the GUID of a Flow built in the Voxtelesys Portal, starting at the **Outbound Call** action on its start widget
 
 The node returns the call status, for example `{ "status": "queued" }`.
 
