@@ -112,7 +112,7 @@ export class VoxtelesysV1 implements INodeType {
 								throw unsupportedOperation(this, resource, operation, i)
 						}
 						break
-					case 'voice':
+					case 'call':
 						switch (operation) {
 							case 'create':
 								results = await createCall.call(this, i)
