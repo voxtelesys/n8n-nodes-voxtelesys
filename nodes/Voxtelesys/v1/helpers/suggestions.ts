@@ -59,13 +59,7 @@ export function toSuggestions(
 	const prefix = labelPrefix ? `${labelPrefix} ` : ''
 
 	return entries.map((entry, index) =>
-		buildSuggestion.call(
-			this,
-			entry,
-			`${prefix}Suggestion ${index + 1}`,
-			normalize,
-			itemIndex
-		),
+		buildSuggestion.call(this, entry, `${prefix}Suggestion ${index + 1}`, normalize, itemIndex),
 	)
 }
 
@@ -104,13 +98,7 @@ function buildSuggestion(
 			break
 
 		case 'OPEN_URL': {
-			suggestion.url = requireString.call(
-				this,
-				`${label} URL`,
-				entry.url,
-				undefined,
-				itemIndex
-			)
+			suggestion.url = requireString.call(this, `${label} URL`, entry.url, undefined, itemIndex)
 
 			const application = (entry.application as string) || 'BROWSER'
 			suggestion.application = application
@@ -131,26 +119,14 @@ function buildSuggestion(
 			suggestion.phone_number = normalizeAndValidate.call(
 				this,
 				`${label} Phone Number`,
-				requireString.call(
-					this,
-					`${label} Phone Number`,
-					entry.phoneNumber,
-					undefined,
-					itemIndex
-				),
+				requireString.call(this, `${label} Phone Number`, entry.phoneNumber, undefined, itemIndex),
 				{ normalize, itemIndex },
 			)
 			break
 
 		case 'SHOW_LOCATION': {
 			suggestion.location = {
-				latitude: requireCoordinate.call(
-					this,
-					`${label} Latitude`,
-					entry.latitude,
-					90,
-					itemIndex
-				),
+				latitude: requireCoordinate.call(this, `${label} Latitude`, entry.latitude, 90, itemIndex),
 				longitude: requireCoordinate.call(
 					this,
 					`${label} Longitude`,

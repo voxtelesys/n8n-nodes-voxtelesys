@@ -56,7 +56,11 @@ const suggestionFields: INodeProperties[] = [
 				value: 'CREATE_CALENDAR_EVENT',
 				description: 'Open the calendar app with a new event prefilled',
 			},
-			{ name: 'Dial Phone', value: 'DIAL_PHONE', description: 'Open the native phone app with a number' },
+			{
+				name: 'Dial Phone',
+				value: 'DIAL_PHONE',
+				description: 'Open the native phone app with a number',
+			},
 			{ name: 'Open URL', value: 'OPEN_URL', description: 'Open a URL in a browser or webview' },
 			{ name: 'Reply', value: 'REPLY', description: 'Send a text reply back to the sender' },
 			{
@@ -67,7 +71,7 @@ const suggestionFields: INodeProperties[] = [
 			{ name: 'Show Location', value: 'SHOW_LOCATION', description: 'Open a map at a location' },
 		],
 		default: 'REPLY',
-		description: "What action is performed when the chip is tapped",
+		description: 'What action is performed when the chip is tapped',
 	},
 	{
 		displayName: 'Text',
