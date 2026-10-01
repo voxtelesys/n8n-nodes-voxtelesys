@@ -77,7 +77,7 @@ export function normalizeAndValidate(
 	if (!isValidE164(number)) {
 		throw new NodeOperationError(
 			this.getNode(),
-			`${label} is not a valid E.164 number: "${number}"`,
+			`${label} is not a valid E.164 number: '${number}'`,
 			{
 				itemIndex: options.itemIndex,
 				description:
@@ -90,7 +90,7 @@ export function normalizeAndValidate(
 	if (number.startsWith('+1') && !isValidNANP(number)) {
 		throw new NodeOperationError(
 			this.getNode(),
-			`${label} is not a valid North American number: "${number}"`,
+			`${label} is not a valid North American number: '${number}'`,
 			{
 				itemIndex: options.itemIndex,
 				description:

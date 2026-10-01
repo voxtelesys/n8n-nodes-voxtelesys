@@ -61,7 +61,13 @@ export async function create(
 
 	if (options.machineDetection) body.machine_detection = options.machineDetection as string
 
-	applyStatusCallback(body, options, options.statusCallbackEvents as string[] | undefined)
+	applyStatusCallback.call(
+		this,
+		body,
+		options,
+		itemIndex,
+		options.statusCallbackEvents as string[] | undefined,
+	)
 
 	const response = await voxtelesysApiRequest.call(this, 'voice', 'POST', '/calls', body)
 

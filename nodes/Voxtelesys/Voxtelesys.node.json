@@ -6,6 +6,8 @@
 	"alias": [
 		"SMS",
 		"MMS",
+		"RCS",
+		"RBM",
 		"Text",
 		"Text Message",
 		"Messaging",
@@ -26,6 +28,12 @@
 			},
 			{
 				"url": "https://developer.voxtelesys.com/apis/voice"
+			},
+			{
+				"url": "https://developer.voxtelesys.com/apis/rcs"
+			},
+			{
+				"url": "https://developer.voxtelesys.com/apis/flow"
 			}
 		]
 	}
