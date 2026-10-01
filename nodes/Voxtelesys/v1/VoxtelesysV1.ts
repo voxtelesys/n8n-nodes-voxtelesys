@@ -7,11 +7,15 @@ import type {
 	JsonObject,
 } from 'n8n-workflow'
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow'
+import { callFields, callOperations } from './actions/call/Call.resource'
+import { create as createCall } from './actions/call/create.operation'
 import { messageFields, messageOperations } from './actions/message/Message.resource'
 import { send as sendMessage } from './actions/message/send.operation'
 import { rcsFields, rcsOperations } from './actions/rcs/Rcs.resource'
 import { send as sendRcs } from './actions/rcs/send.operation'
 import { nodeHints } from './helpers/hints'
+import { flowFields, flowOperations } from './actions/flow/Flow.resource'
+import { execute as executeFlow } from './actions/flow/execute.operation'
 
 function unsupportedOperation(
 	context: IExecuteFunctions,
@@ -60,15 +64,21 @@ export class VoxtelesysV1 implements INodeType {
 					type: 'options',
 					noDataExpression: true,
 					options: [
+						{ name: 'Call', value: 'call' },
+						{ name: 'Flow', value: 'flow' },
 						{ name: 'Message', value: 'message' },
 						{ name: 'RCS Message', value: 'rcs' },
 					],
 					default: 'message',
 				},
+				...callOperations,
+				...callFields,
 				...messageOperations,
 				...messageFields,
 				...rcsOperations,
 				...rcsFields,
+				...flowOperations,
+				...flowFields,
 			],
 		}
 	}
@@ -88,6 +98,24 @@ export class VoxtelesysV1 implements INodeType {
 						switch (operation) {
 							case 'send':
 								results = await sendMessage.call(this, i)
+								break
+							default:
+								throw unsupportedOperation(this, resource, operation, i)
+						}
+						break
+					case 'flow':
+						switch (operation) {
+							case 'execute':
+								results = await executeFlow.call(this, i)
+								break
+							default:
+								throw unsupportedOperation(this, resource, operation, i)
+						}
+						break
+					case 'voice':
+						switch (operation) {
+							case 'create':
+								results = await createCall.call(this, i)
 								break
 							default:
 								throw unsupportedOperation(this, resource, operation, i)
