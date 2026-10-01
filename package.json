@@ -1,6 +1,6 @@
 {
   "name": "@voxtelesys/n8n-nodes-voxtelesys",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "n8n community node for the Voxtelesys Messaging, RCS, Flow, and Voice APIs",
   "keywords": [
     "n8n-community-node-package",
