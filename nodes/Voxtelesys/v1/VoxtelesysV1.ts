@@ -11,6 +11,8 @@ import { callFields, callOperations } from './actions/call/Call.resource'
 import { create as createCall } from './actions/call/create.operation'
 import { messageFields, messageOperations } from './actions/message/Message.resource'
 import { send as sendMessage } from './actions/message/send.operation'
+import { flowFields, flowOperations } from './actions/flow/Flow.resource'
+import { execute as executeFlow } from './actions/flow/execute.operation'
 
 export class VoxtelesysV1 implements INodeType {
 	description: INodeTypeDescription
@@ -44,9 +46,9 @@ export class VoxtelesysV1 implements INodeType {
 					name: 'resource',
 					type: 'options',
 					noDataExpression: true,
-					// Resource options must be ordered alphabetically by name
 					options: [
 						{ name: 'Call', value: 'call' },
+						{ name: 'Flow', value: 'flow' },
 						{ name: 'Message', value: 'message' },
 					],
 					default: 'message',
@@ -55,6 +57,8 @@ export class VoxtelesysV1 implements INodeType {
 				...callFields,
 				...messageOperations,
 				...messageFields,
+				...flowOperations,
+				...flowFields,
 			],
 		}
 	}
@@ -73,6 +77,8 @@ export class VoxtelesysV1 implements INodeType {
 					results = await sendMessage.call(this, i)
 				} else if (resource === 'call' && operation === 'create') {
 					results = await createCall.call(this, i)
+				} else if (resource === 'flow' && operation === 'execute') {
+					results = await executeFlow.call(this, i)
 				} else {
 					throw new NodeOperationError(
 						this.getNode(),
