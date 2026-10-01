@@ -240,6 +240,12 @@ Set **Status Callback URL** under **Options** to `{{ $execution.resumeUrl }}` an
 
 ## Version history
 
-### 0.1.0 (Current)
+### 0.2.0 (Current)
+
+- Send RCS messages
+- Create voice calls
+- Execute flows
+
+### 0.1.0
 
 - Send SMS/MMS messages
